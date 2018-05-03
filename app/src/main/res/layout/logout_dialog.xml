@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="350dp"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_white_shape"
+    android:layout_gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:text="Are you sure you want to leave?"
+        android:textAlignment="center" />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/cry_emoji"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/yes_btn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/buttonstyleaccent"
+            android:textColor="@color/white"
+            android:text="YES"
+            android:layout_margin="16dp"/>
+
+        <Button
+            android:id="@+id/no_btn"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/buttonstyleaccent"
+            android:textColor="@color/white"
+            android:text="no"
+            android:layout_margin="16dp"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>
