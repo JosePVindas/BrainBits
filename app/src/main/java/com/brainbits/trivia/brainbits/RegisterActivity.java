@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -18,7 +19,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Locale;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -26,6 +30,9 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
     private TextView birthday;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
+    private Locale[] locale;
+    private ArrayList<String> countries;
+    private String Country;
 
     // Widgets
     private Button register;
@@ -66,6 +73,20 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+
+        locale = Locale.getAvailableLocales();
+
+        for( Locale loc : locale ){
+            Country = loc.getDisplayCountry();
+            if( Country.length() > 0 && !countries.contains(Country) ){
+                countries.add( Country );
+            }
+        }
+        Log.d("RegisterActivity","About surpassed the for");
+        Collections.sort(countries, String.CASE_INSENSITIVE_ORDER);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, countries);
+        country.setAdapter(adapter);
+
 
 
     }

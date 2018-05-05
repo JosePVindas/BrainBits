@@ -78,18 +78,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // Login the user. cheks the credentials against the database
-    private void loginUser(String username, String password){
+    private void loginUser(String usr, String pswd){
 
-        // do something with database to check credentials here
-        //String valid = readFromFile(this);
+        boolean isInfoOk = checkCredentials(usr,pswd);
 
+        if (isInfoOk){
 
-        writeToFile("Something",this);
-        final Intent i = new Intent(this,MapsActivity.class);
-        startActivity(i);
-        finish();
+            writeToFile("Something",this);
+            final Intent i = new Intent(this,MapsActivity.class);
+            startActivity(i);
+            finish();
+        } else {
+            username.setText("");
+            password.setText("");
+            Toast.makeText(LoginActivity.this,"Username or Password incorrect",Toast.LENGTH_LONG).show();
+        }
 
+    }
 
+    //Check credentials with database
+    private boolean checkCredentials(String usr, String pswd){
+        // Do something with database
+        return true;
     }
 
     // Jumps to the AboutActivity

@@ -43,6 +43,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean mPermissionsGranted = false;
     private Location mCurrentLocation;
 
+    private int mCurrentTaskId;
+
     // Google maps API vars
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -51,9 +53,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FloatingActionButton logout;
     private FloatingActionButton findme;
     private FloatingActionButton profile;
+    private FloatingActionButton taskDone;
 
     // Dialogs
     private Dialog logOutDialog;
+    private Dialog CorrectDialog;
+    private Dialog WrongDialog;
 
     // Handles everithyng that is to happen when the Activity first starts
     @Override
@@ -61,7 +66,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        this.mCurrentLocation = new Location("");
+        this.mCurrentTaskId = 0;
+
         logOutDialog = new Dialog(this);
+        CorrectDialog = new Dialog(this);
+        WrongDialog = new Dialog(this);
+
         initMap();
 
         logout = (FloatingActionButton)findViewById(R.id.fab_logout);
@@ -84,8 +95,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent i = new Intent(MapsActivity.this,LoginActivity.class);
-                startActivity(i);
+                final Intent x = new Intent(MapsActivity.this,ProfileActivity.class);
+                startActivity(x);
+            }
+        });
+
+        taskDone = (FloatingActionButton) findViewById(R.id.fab_settings);
+        taskDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkTask();
             }
         });
 
@@ -164,13 +183,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent i = new Intent(MapsActivity.this, ProfileActivity.class);
+                final Intent i = new Intent(MapsActivity.this, LoginActivity.class);
                 startActivity(i);
             }
         });
 
         logOutDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         logOutDialog.show();
+    }
+
+    //Check if the current task has been done correctly
+    private void checkTask(){
+
+        // check current task here, using current location for testing purposes
+        //boolean done = isLocationCorrect();
+        boolean done = true;
+
+        if (done){
+            CorrectDialog.setContentView(R.layout.dialog_correct_location);
+            Button ok = (Button)CorrectDialog.findViewById(R.id.correct_ok);
+
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CorrectDialog.dismiss();
+                }
+            });
+
+            CorrectDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            CorrectDialog.show();
+        } else {
+
+            WrongDialog.setContentView(R.layout.dialog_incorrect_location);
+            Button ok = (Button)WrongDialog.findViewById(R.id.incorrect_ok);
+
+            ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    WrongDialog.dismiss();
+                }
+            });
+
+            WrongDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            WrongDialog.show();
+
+        }
     }
 
     // Gets the current device location
@@ -244,14 +301,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     // Compares que current location to the QuestLocation and decides if it is correct or incorrect
-    private boolean isLocationCorrect(double lat, double lng) {
-
-        Location point = new Location("");
-        point.setLatitude(lat);
-        point.setLatitude(lng);
+    private boolean isLocationCorrect() {
 
         getDeviceLocation();
-        float distance = getDistance(mCurrentLocation,point);
+        float distance = getDistance(getCurrentTaskLocation(this.mCurrentTaskId),this.mCurrentLocation);
 
         if (distance > 30.0){
             return false;
@@ -266,6 +319,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return current.distanceTo(point);
 
+    }
+
+    //get location from DB
+    private Location getCurrentTaskLocation(int taskId){
+        double lat;
+        double lng;
+        Location location = new Location("");
+
+        // retrieve lat and long from Db
+        // lat = something;
+        // lng = somethingelse;
+        //location.setLatitude(lat);
+        //location.setLongitude(lng);
+
+        return location;
     }
 
 
