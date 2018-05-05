@@ -32,7 +32,7 @@ public class Splash extends AppCompatActivity {
         text = (TextView) findViewById(R.id.text);
         image = (ImageView) findViewById(R.id.image);
 
-        Animation fade = AnimationUtils.loadAnimation(this,R.anim.mytransition);
+        Animation fade = AnimationUtils.loadAnimation(this,R.anim.splash_animation);
 
         text.startAnimation(fade);
         image.startAnimation(fade);
@@ -93,9 +93,9 @@ public class Splash extends AppCompatActivity {
             }
         }
         catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
+            Log.e("ic_login activity", "File not found: " + e.toString());
         } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
+            Log.e("ic_login activity", "Can not read file: " + e.toString());
         }
 
         return ret;

@@ -14,7 +14,7 @@
         android:background="#fff"
         map:itemTextColor="@color/colorPrimary"
         map:itemIconTint="@color/colorPrimary"
-        map:menu="@menu/drawermenu"
+        map:menu="@menu/drawer_menu"
         android:layout_gravity="start">
 
 

@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/buttonstyleaccent"
+                android:background="@drawable/button_style_accent"
                 android:text="Learn more"
                 android:textColor="#fff" />
 
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:background="@drawable/buttonstyleborder"
+                android:background="@drawable/button_style_border"
                 android:text="Join the army!"
                 android:textColor="#fff" />
         </LinearLayout>
@@ -86,7 +86,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="40dp"
-            android:background="@drawable/buttonstyleaccent"
+            android:background="@drawable/button_style_accent"
             android:text="Login"
             android:textColor="#fff" />
     </LinearLayout>

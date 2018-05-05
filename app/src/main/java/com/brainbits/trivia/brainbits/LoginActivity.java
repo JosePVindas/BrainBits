@@ -76,16 +76,11 @@ public class LoginActivity extends AppCompatActivity {
         // do something with database to check credentials here
         //String valid = readFromFile(this);
 
-//        if (valid == "Something") {
-//            final Intent i = new Intent(this,MapsActivity.class);
-//            startActivity(i);
-//        } else {
-//            Toast.makeText(this,"Register First",Toast.LENGTH_LONG);
-//        }
 
         writeToFile("Something",this);
         final Intent i = new Intent(this,MapsActivity.class);
         startActivity(i);
+        finish();
 
 
     }
@@ -102,7 +97,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void goToRegister(){
 
-        // do something with database to check credentials here
 
         final Intent i = new Intent(this,RegisterActivity.class);
         startActivity(i);
@@ -131,9 +125,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
+            Log.e("ic_login activity", "File not found: " + e.toString());
         } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
+            Log.e("ic_login activity", "Can not read file: " + e.toString());
         }
 
         return ret;

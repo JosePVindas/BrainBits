@@ -19,8 +19,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -30,34 +28,46 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    // Vars
     private static final String TAG = "MapsActivity";
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final String WRITE_EXTERNAL = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private static final String READ_EXTERNAL = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final int PERMISSION_REQUEST_CODE = 1234;
+    private boolean mPermissionsGranted = false;
+    private Location mCurrentLocation;
+
+    // Google maps API vars
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    // Widgets
     private FloatingActionButton logout;
     private FloatingActionButton findme;
+    private FloatingActionButton profile;
 
+    // Dialogs
     private Dialog logOutDialog;
 
+    // Handles everithyng that is to happen when the Activity first starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         logOutDialog = new Dialog(this);
-        //getPermissions();
         initMap();
 
         logout = (FloatingActionButton)findViewById(R.id.fab_logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //goToActivity("LogOut");
                 logOutPopUp();
             }
         });
@@ -69,9 +79,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 getDeviceLocation();
             }
         });
+
+        profile = (FloatingActionButton) findViewById(R.id.fab_profile);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent i = new Intent(MapsActivity.this,LoginActivity.class);
+                startActivity(i);
+            }
+        });
+
+
     }
 
+    // Handles what happens after permissions are either granted or rejected
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mPermissionsGranted = false;
 
+        switch (requestCode){
+            case PERMISSION_REQUEST_CODE:{
+                if(grantResults.length > 0){
+                    for (int i = 0; i < grantResults.length; i++){
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            mPermissionsGranted = false;
+                            return;
+                        }
+                    }
+                    mPermissionsGranted = true;
+                    //initialize map
+                }
+            }
+        }
+    }
+
+    // Handles everything that is to happen when the GoogleMap is ready
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -81,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.mapstyle));
+                            this, R.raw.map_style_dark_blue));
 
             if (!success) {
                 Log.e("MapsActivity", "Style parsing failed.");
@@ -104,14 +146,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
 
-        // Go to the general TEC location
-        //goToLocation(9.857247, -83.9145017, 15);
-
     }
 
     //Manage dialog options
     private void logOutPopUp(){
-        logOutDialog.setContentView(R.layout.logout_dialog);
+        logOutDialog.setContentView(R.layout.dialog_logout);
         Button dismiss = (Button)logOutDialog.findViewById(R.id.no_btn);
         Button accept = (Button)logOutDialog.findViewById(R.id.yes_btn);
 
@@ -125,7 +164,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToActivity("LogOut");
+                final Intent i = new Intent(MapsActivity.this, ProfileActivity.class);
+                startActivity(i);
             }
         });
 
@@ -133,6 +173,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         logOutDialog.show();
     }
 
+    // Gets the current device location
     private void getDeviceLocation(){
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -146,6 +187,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (task.isSuccessful()){
                             Log.d(TAG,"Successful");
                             Location current = (Location) task.getResult();
+                            mCurrentLocation = current;
                             goToLocation(current,15);
                         } else {
                             Log.d(TAG,"Unsuccesful");
@@ -160,21 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    // Move the map to a specified location
-    private void goToLocation(double lat, double lng) {
-        LatLng location = new LatLng(lat, lng);
-        CameraUpdate update = CameraUpdateFactory.newLatLng(location);
-        mMap.moveCamera(update);
-    }
-
-    // Move the map to a specified location and zoom by 'zoom' ammount.
-    private void goToLocation(double lat, double lng, int zoom) {
-        LatLng location = new LatLng(lat, lng);
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(location, zoom);
-        mMap.moveCamera(update);
-    }
-
-    // Move the map to a specified location and zoom by 'zoom' ammount.
+    // Move the map to a specified location and zoom by 'zoom' ammount
     private void goToLocation(Location location, int zoom) {
         double lat =  location.getLatitude();
         double lng = location.getLongitude();
@@ -183,15 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(update);
     }
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-
-    private static final String WRITE_EXTERNAL = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-    private static final String READ_EXTERNAL = Manifest.permission.READ_EXTERNAL_STORAGE;
-
-    private static final int PERMISSION_REQUEST_CODE = 1234;
-    private boolean mPermissionsGranted = false;
-
+    // Initializes everything related to the GoogleMap and its use
     private void initMap () {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -199,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    // Requests user for the permissions the application requires for proper use
     private void getPermissions (){
         String[] permissions = {FINE_LOCATION,COARSE_LOCATION,WRITE_EXTERNAL,READ_EXTERNAL};
 
@@ -222,33 +243,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mPermissionsGranted = false;
+    // Compares que current location to the QuestLocation and decides if it is correct or incorrect
+    private boolean isLocationCorrect(double lat, double lng) {
 
-        switch (requestCode){
-            case PERMISSION_REQUEST_CODE:{
-                if(grantResults.length > 0){
-                    for (int i = 0; i < grantResults.length; i++){
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED){
-                            mPermissionsGranted = false;
-                            return;
-                        }
-                    }
-                    mPermissionsGranted = true;
-                    //initialize map
-                }
-            }
+        Location point = new Location("");
+        point.setLatitude(lat);
+        point.setLatitude(lng);
+
+        getDeviceLocation();
+        float distance = getDistance(mCurrentLocation,point);
+
+        if (distance > 30.0){
+            return false;
+        } else {
+            return true;
         }
+
+
     }
 
-    private void goToActivity(String activity){
-        switch(activity){
-            case"LogOut": {
-                final Intent i = new Intent(this,LoginActivity.class);
-                startActivity(i);
-            }
+    //return the distance between two locations
+    private float getDistance(Location current, Location point){
 
-        }
+        return current.distanceTo(point);
+
     }
+
+
+
+
 }

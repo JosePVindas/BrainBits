@@ -13,7 +13,7 @@
         android:layout_height="115dp"
         android:layout_marginTop="50dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/applogo"/>
+        android:src="@drawable/splash_application_logo"/>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -91,7 +91,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:background="@drawable/buttonstyleaccent"
+            android:background="@drawable/button_style_accent"
             android:text="DONE" />
     </LinearLayout>
 

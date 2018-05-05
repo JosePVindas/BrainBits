@@ -63,14 +63,27 @@
                 android:hint="Repeat Password"
                 android:inputType="textPassword" />
 
-            <TextView
-                android:id="@+id/bdTxt"
-                android:layout_width="300dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="15dp"
-                android:hint="Birthday"
-                android:textSize="18dp" />
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="15dp">
+
+                <Spinner
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/country_spinner"
+                    android:layout_margin="10dp"></Spinner>
+
+                <Spinner
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/city_spinner"
+                    android:layout_margin="10dp"></Spinner>
+
+            </LinearLayout>
+
 
             <Button
                 android:id="@+id/registerBtn"
@@ -78,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="150dp"
-                android:background="@drawable/buttonstyleaccent"
+                android:background="@drawable/button_style_accent"
                 android:text="Join the army"
                 android:textColor="#fff"
                 android:textSize="15dp" />

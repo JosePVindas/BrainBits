@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+
+        <TextView
+            android:id="@+id/username_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:text="Your Username"
+            android:textAlignment="center"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="35dp"/>
+
+        <TextView
+            android:id="@+id/user_email_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="20dp"
+            android:text="Email: youremail@mail.com"
+            android:textAlignment="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp"
+            android:gravity="center_horizontal">
+
+           <ImageView
+               android:layout_width="50dp"
+               android:layout_height="50dp"
+               android:id="@+id/user_rank_image"
+               android:layout_gravity="center_horizontal"
+               android:src="@drawable/splash_application_logo"/>
+            <TextView
+                android:layout_marginTop="15dp"
+                android:id="@+id/user_rank_profile"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="20dp"
+                android:text="Your rank"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/logout_button_profile"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="Logout"
+            android:background="@drawable/button_style_accent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="150dp"/>
+
+
+
+
+
+</LinearLayout>
