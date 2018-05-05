@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    // Widgets
     private TabLayout tablayout;
     private AppBarLayout appBarLayout;
     private ViewPager viewpager;

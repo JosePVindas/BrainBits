@@ -23,12 +23,18 @@ import java.io.OutputStreamWriter;
 
 public class LoginActivity extends AppCompatActivity {
 
+    // Vars
+    private static final String TAG = "MapsActivity";
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
+    // Widgets
     Button register;
     Button instructions;
     Button logn;
     EditText username;
     EditText password;
 
+    // Handle everything after activity is entered
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // Login the user. cheks the credentials against the database
     private void loginUser(String username, String password){
 
         // do something with database to check credentials here
@@ -85,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // Jumps to the AboutActivity
     private void showAbout(){
 
         // do something with database to check credentials here
@@ -95,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // Jumps to the RegisterActivity
     private void goToRegister(){
 
 
@@ -103,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // reads from external memory
     private String readFromFile(Context context) {
 
         String ret = "";
@@ -133,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
         return ret;
     }
 
+    // writes to external memory
     private void writeToFile(String data,Context context) {
         Toast.makeText(this,"Entered write to file",Toast.LENGTH_LONG).show();
         try {
@@ -145,9 +156,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private static final String TAG = "MapsActivity";
-    private static final int ERROR_DIALOG_REQUEST = 9001;
-
+    // checks to see if the GoogleServices are available
     public boolean isServiceOk () {
         Log.d(TAG,"Checking Google Services");
 

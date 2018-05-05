@@ -259,7 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
 
-
     }
 
     //return the distance between two locations

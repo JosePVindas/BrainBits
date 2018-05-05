@@ -19,17 +19,10 @@ public class AboutActivity extends AppCompatActivity {
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToLoginPage();
+                final Intent i = new Intent(AboutActivity.this,LoginActivity.class);
+                startActivity(i);
             }
         });
     }
 
-    private void goToLoginPage(){
-
-        // do something with database to check credentials here
-
-        final Intent i = new Intent(this,LoginActivity.class);
-        startActivity(i);
-
-    }
 }

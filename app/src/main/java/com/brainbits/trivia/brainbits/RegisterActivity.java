@@ -36,12 +36,18 @@ public class RegisterActivity extends AppCompatActivity {
     private Spinner country;
     private Spinner city;
 
-
-
+    // Handles everything to be done once the activity is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        username = (EditText) findViewById(R.id.usr);
+        email = (EditText) findViewById(R.id.mail);
+        password = (EditText) findViewById(R.id.pswd);
+        passwordR = (EditText) findViewById(R.id.pswdR);
+        country = (Spinner) findViewById(R.id.country_spinner);
+        city = (Spinner) findViewById(R.id.city_spinner);
 
 
         register = (Button) findViewById(R.id.registerBtn);
@@ -52,49 +58,19 @@ public class RegisterActivity extends AppCompatActivity {
                 String mail = email.getText().toString();
                 String pswd = password.getText().toString();
                 String pswdR = passwordR.getText().toString();
-                String birth = birthday.getText().toString();
-
+                String ctry = country.getSelectedItem().toString();
+                String cty = city.getSelectedItem().toString();
 
                     writeToFile("Something",RegisterActivity.this);
-                    goToMaps();
+                    registerUser(usr,mail,pswd,pswdR,ctry,cty);
 
             }
         });
 
-        username = (EditText) findViewById(R.id.usr);
-        email = (EditText) findViewById(R.id.mail);
-        password = (EditText) findViewById(R.id.pswd);
-        passwordR = (EditText) findViewById(R.id.pswdR);
-
-//        birthday = (TextView) findViewById(R.id.bdTxt);
-//        birthday.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Calendar cal = Calendar.getInstance();
-//                int year = cal.get(Calendar.YEAR);
-//                int month = cal.get(Calendar.MONTH);
-//                int day = cal.get(Calendar.DAY_OF_MONTH);
-//
-//                DatePickerDialog dialog = new DatePickerDialog(
-//                        RegisterActivity.this,
-//                        android.R.style.Theme_Black,
-//                        mDateSetListener,
-//                        year,month,day);
-//                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//                dialog.show();
-//            }
-//        });
-//        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                month = month + 1;
-//                String date = month + "/" + dayOfMonth + "/" + year;
-//                birthday.setText(date);
-//            }
-//        };
 
     }
 
+    // writes file to external memory
     private void writeToFile(String data,Context context) {
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("config.txt", Context.MODE_PRIVATE));
@@ -106,8 +82,57 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    // Jumps to mapsActivity
     private void goToMaps () {
         final Intent i = new Intent(this,MapsActivity.class);
         startActivity(i);
+    }
+
+    // Registers the user
+    private void registerUser(String usr, String mail, String pswd, String pswdR, String ctry, String cty){
+
+        boolean isInfoOk = checkUser(usr,mail);
+
+        if (pswd.equals(pswdR)){
+
+            if (isInfoOk){
+
+                writeToDB(usr,mail,pswd,ctry,cty);
+                Toast.makeText(RegisterActivity.this,"Welcome to BrainBits ",Toast.LENGTH_LONG).show();
+                final Intent i = new Intent(RegisterActivity.this,MapsActivity.class);
+                startActivity(i);
+                finish();
+
+            } else {
+
+                username.setText("");
+                email.setText("");
+                password.setText("");
+                passwordR.setText("");
+                Toast.makeText(RegisterActivity.this,"Username or Email already taken",Toast.LENGTH_LONG).show();
+
+            }
+
+        } else {
+            username.setText("");
+            email.setText("");
+            password.setText("");
+            passwordR.setText("");
+            Toast.makeText(RegisterActivity.this,"Password doesn't match",Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    // Check with database to see if username and email are available
+    private boolean checkUser(String usr, String mail){
+
+        // Check with database
+        return true;
+    }
+
+    // insert data into the database
+    private void writeToDB(String usr, String mail, String pswd, String ctry, String cty){
+
+        // Write all data to the database
     }
 }
