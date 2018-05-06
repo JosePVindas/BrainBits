@@ -8,7 +8,7 @@
 
 
         <TextView
-            android:id="@+id/username_profile"
+            android:id="@+id/profile_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimary"
@@ -20,7 +20,7 @@
             android:layout_marginTop="35dp"/>
 
         <TextView
-            android:id="@+id/user_email_profile"
+            android:id="@+id/profile_mail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
@@ -38,12 +38,12 @@
            <ImageView
                android:layout_width="50dp"
                android:layout_height="50dp"
-               android:id="@+id/user_rank_image"
+               android:id="@+id/profile_rank_img"
                android:layout_gravity="center_horizontal"
                android:src="@drawable/splash_application_logo"/>
             <TextView
                 android:layout_marginTop="15dp"
-                android:id="@+id/user_rank_profile"
+                android:id="@+id/profile_rank"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:textColor="@color/colorAccent"
@@ -55,7 +55,7 @@
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:id="@+id/logout_button_profile"
+            android:id="@+id/profile_logout"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:text="Logout"
