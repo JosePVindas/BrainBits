@@ -31,6 +31,8 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import static com.google.android.gms.common.internal.safeparcel.SafeParcelable.NULL;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     // Vars
@@ -44,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mCurrentLocation;
 
     private int mCurrentTaskId;
+    private String UsrNm;
 
     // Google maps API vars
     private GoogleMap mMap;
@@ -68,6 +71,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         this.mCurrentLocation = new Location("");
         this.mCurrentTaskId = 0;
+        Bundle itemIntent = getIntent().getExtras();
+        this.UsrNm = itemIntent.getString("UserName");
+        checkUsr();
+
+
 
         logOutDialog = new Dialog(this);
         CorrectDialog = new Dialog(this);
@@ -197,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // check current task here, using current location for testing purposes
         //boolean done = isLocationCorrect();
-        boolean done = true;
+        boolean done = false;
 
         if (done){
             CorrectDialog.setContentView(R.layout.dialog_correct_location);
@@ -334,6 +342,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //location.setLongitude(lng);
 
         return location;
+    }
+
+    private void checkUsr(){
+        if (UsrNm.equals("Splash")){
+            UsrNm = "None";
+        } else {
+            Toast.makeText(MapsActivity.this,"Welcome " + UsrNm,Toast.LENGTH_LONG).show();
+        }
     }
 
 

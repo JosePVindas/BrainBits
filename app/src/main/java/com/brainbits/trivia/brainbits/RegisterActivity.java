@@ -75,9 +75,11 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         locale = Locale.getAvailableLocales();
+        Log.d("Locales", "Reached here");
 
         for( Locale loc : locale ){
             Country = loc.getDisplayCountry();
+            Log.d("Locales", "Reached somewhere");
             if( Country.length() > 0 && !countries.contains(Country) ){
                 countries.add( Country );
             }

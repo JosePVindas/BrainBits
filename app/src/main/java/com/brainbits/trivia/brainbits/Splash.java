@@ -47,6 +47,10 @@ public class Splash extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     if (loging != "") {
+                        Bundle bundle = new Bundle();
+                        String usrname = "Splash";
+                        bundle.putString("UserName",usrname);
+                        j.putExtras(bundle);
                         startActivity(j);
                         finish();
                     } else {

@@ -85,7 +85,11 @@ public class LoginActivity extends AppCompatActivity {
         if (isInfoOk){
 
             writeToFile("Something",this);
-            final Intent i = new Intent(this,MapsActivity.class);
+            final Intent i = new Intent(LoginActivity.this,MapsActivity.class);
+            Bundle bundle = new Bundle();
+            String usrname = username.getText().toString();
+            bundle.putString("UserName",usrname);
+            i.putExtras(bundle);
             startActivity(i);
             finish();
         } else {
