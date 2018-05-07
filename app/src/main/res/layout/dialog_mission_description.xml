@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="400dp"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_white_shape"
+    android:layout_gravity="center">
+
+    <TextView
+        android:id="@+id/dialog_mission_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:text="Mission Name"
+        android:textAlignment="center"
+        android:layout_marginTop="15dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp">
+
+        <TextView
+            android:id="@+id/dialog_mission_sponsor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="20dp"
+            android:text="Mission Sponsor"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:id="@+id/dialog_mission_sponsor_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="50dp"
+            android:src="@mipmap/sponsor_pepsi"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dialog_mission_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="15dp"
+        android:text="This textview will hold the mission description for the user to use as a guide"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/dialog_mission_first_clue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="15dp"
+        android:text="This is the first clue"
+        android:textAlignment="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/dialog_mission_show_clues"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_style_accent"
+            android:textColor="@color/white"
+            android:text="show clues"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"/>
+
+        <Button
+            android:id="@+id/dialog_mission_ok"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_style_accent"
+            android:textColor="@color/white"
+            android:text="OK"
+            android:layout_marginTop="10dp" />
+
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

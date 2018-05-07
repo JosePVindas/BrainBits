@@ -75,7 +75,7 @@ public class GeneralActivity extends AppCompatActivity {
 
         // Add custom adapter to the ViewPager
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.AddFragment(mFragmentQuest, "Quests");
+        adapter.AddFragment(mFragmentQuest, "Missions");
         adapter.AddFragment(mFragmentProfile, "Profile");
         adapter.AddFragment(mFragmentInbox, "Inbox");
         mViewPager.setAdapter(adapter);

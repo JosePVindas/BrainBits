@@ -3,6 +3,7 @@ package com.brainbits.trivia.brainbits;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -65,8 +66,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String mail = email.getText().toString();
                 String pswd = password.getText().toString();
                 String pswdR = passwordR.getText().toString();
-                String ctry = country.getSelectedItem().toString();
-                String cty = city.getSelectedItem().toString();
+                //String ctry = country.getSelectedItem().toString();
+                //String cty = city.getSelectedItem().toString();
+
+                String ctry = "hello";
+                String cty = "hello";
 
                     writeToFile("Something",RegisterActivity.this);
                     registerUser(usr,mail,pswd,pswdR,ctry,cty);
@@ -74,20 +78,20 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        locale = Locale.getAvailableLocales();
-        Log.d("Locales", "Reached here");
-
-        for( Locale loc : locale ){
-            Country = loc.getDisplayCountry();
-            Log.d("Locales", "Reached somewhere");
-            if( Country.length() > 0 && !countries.contains(Country) ){
-                countries.add( Country );
-            }
-        }
-        Log.d("RegisterActivity","About surpassed the for");
-        Collections.sort(countries, String.CASE_INSENSITIVE_ORDER);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, countries);
-        country.setAdapter(adapter);
+//        locale = Locale.getAvailableLocales();
+//        Log.d("Locales", "Reached here");
+//
+//        for( Locale loc : locale ){
+//            Country = loc.getDisplayCountry();
+//            Log.d("Locales", "Reached somewhere");
+//            if( Country.length() > 0 && !countries.contains(Country) ){
+//                countries.add( Country );
+//            }
+//        }
+//        Log.d("RegisterActivity","About surpassed the for");
+//        Collections.sort(countries, String.CASE_INSENSITIVE_ORDER);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, countries);
+//        country.setAdapter(adapter);
 
 
 
@@ -122,6 +126,18 @@ public class RegisterActivity extends AppCompatActivity {
 
                 writeToDB(usr,mail,pswd,ctry,cty);
                 Toast.makeText(RegisterActivity.this,"Welcome to BrainBits ",Toast.LENGTH_LONG).show();
+
+                SharedPreferences sp=getSharedPreferences("Login", MODE_PRIVATE);
+                SharedPreferences.Editor Ed=sp.edit();
+                Ed.putString("usr", usr );
+                Ed.putString("mail", mail);
+                Ed.putString("pswd", pswd);
+                Ed.putInt("rank", 0);
+                Ed.commit();
+
+
+
+
                 final Intent i = new Intent(RegisterActivity.this,MapsActivity.class);
                 startActivity(i);
                 finish();

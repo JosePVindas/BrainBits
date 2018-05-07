@@ -21,17 +21,17 @@
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
                     android:textColor="@color/colorAccent"
-                    android:text="Your Current Quests:"
+                    android:text="Your Current Missions:"
                     android:textAlignment="center"/>
 
                 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="15dp"
                 android:fillViewport="true">
 
                     <ListView
-                        android:id="@+id/current_quest_feed"
+                        android:id="@+id/current_missions"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:stretchColumns="1">
@@ -48,17 +48,17 @@
                     android:layout_height="wrap_content"
                     android:textSize="20dp"
                     android:textColor="@color/colorAccent"
-                    android:text="Available Quests:"
+                    android:text="Available Missions:"
                     android:textAlignment="center"/>
 
                 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="15dp"
                     android:fillViewport="true">
 
                     <ListView
-                        android:id="@+id/available_quest_feed"
+                        android:id="@+id/available_missions"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:stretchColumns="1">

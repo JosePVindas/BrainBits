@@ -3,6 +3,7 @@ package com.brainbits.trivia.brainbits;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -46,7 +47,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location mCurrentLocation;
 
     private int mCurrentTaskId;
+
     private String UsrNm;
+    private String pass;
 
     // Google maps API vars
     private GoogleMap mMap;
@@ -71,9 +74,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         this.mCurrentLocation = new Location("");
         this.mCurrentTaskId = 0;
-        Bundle itemIntent = getIntent().getExtras();
-        this.UsrNm = itemIntent.getString("UserName");
-        checkUsr();
+
+//        Bundle itemIntent = getIntent().getExtras();
+//        this.UsrNm = itemIntent.getString("UserName");
+//        checkUsr();
+
+        SharedPreferences preferences = this.getSharedPreferences("Login", MODE_PRIVATE);
+
+        this.UsrNm =preferences.getString("usr", null);
+        this.pass = preferences.getString("pswd", null);
 
 
 
