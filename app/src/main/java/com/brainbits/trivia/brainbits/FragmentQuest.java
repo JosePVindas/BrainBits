@@ -1,6 +1,7 @@
 package com.brainbits.trivia.brainbits;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.Fragment;
@@ -15,10 +16,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class FragmentQuest  extends Fragment{
 
@@ -42,9 +43,8 @@ public class FragmentQuest  extends Fragment{
 
         // String Arrays for the list Views
         // Access Database to getInfo
-          final ArrayList<String> mMissions = new ArrayList<String>(
-                Arrays.asList("Mission 1", "Mission 2", "Mission 3", "Mission 4", "Mission 5", "Mission 6", "Mission 7", "Mission 8", "Mission 9"));
-        final ArrayList<String> pMissions = new ArrayList<String>(Arrays.asList("Mission 10", "Mission 11", "Mission 12", "Mission 13", "Mission 14", "Mission 15"));
+          final ArrayList<String> mMissions = getMissions();
+        final ArrayList<String> pMissions = getAvailableMissions();
 
         // List Views from the Layout File
         final ListView cMissions = (ListView)view.findViewById(R.id.current_missions);
@@ -61,7 +61,7 @@ public class FragmentQuest  extends Fragment{
         // Adding a listener to evaluate clicks on each item
         cMissions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 missionInfo.setContentView(R.layout.dialog_mission_description);
                 // Find dialog elements
 
@@ -90,11 +90,18 @@ public class FragmentQuest  extends Fragment{
                         missionInfo.dismiss();
                     }
                 });
+
                 Button showClue = (Button) missionInfo.findViewById(R.id.dialog_mission_show_clues);
                 showClue.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(),"Coming soon!",Toast.LENGTH_LONG).show();
+
+                        pMissions.add(mMissions.get(position));
+                        adapter1.notifyDataSetChanged();
+                        abortMission(mMissions.get(position));
+                        mMissions.remove(position);
+                        adapter.notifyDataSetChanged();
+                        missionInfo.dismiss();
                     }
                 });
 
@@ -136,13 +143,14 @@ public class FragmentQuest  extends Fragment{
                         missionInfoav.dismiss();
                     }
                 });
-                Button joinMission = (Button) missionInfoav.findViewById(R.id.dialog_missionav_join);
+                final Button joinMission = (Button) missionInfoav.findViewById(R.id.dialog_missionav_join);
                 joinMission.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //Toast.makeText(getActivity(),"Coming soon!",Toast.LENGTH_LONG).show();
+
                         mMissions.add(pMissions.get(position));
                         adapter.notifyDataSetChanged();
+                        joinMission(pMissions.get(position));
                         pMissions.remove(position);
                         adapter1.notifyDataSetChanged();
                         missionInfoav.dismiss();
@@ -157,9 +165,64 @@ public class FragmentQuest  extends Fragment{
             }
         });
 
-
-
         // returning the view so it can be displayed in GeneralActivity
         return view;
+    }
+
+    private void joinMission (String mission){
+
+        // Getting the username for it's use in the database
+        SessionManager manager = new SessionManager(getActivity());
+        String username = manager.getUsername();
+
+       // Notify DB of new mission
+
+    }
+
+    private void abortMission (String mission){
+
+        // Getting the username for it's use in the database
+        SessionManager manager = new SessionManager(getActivity());
+        String username = manager.getUsername();
+
+        // Notify DB to remove mission
+
+    }
+
+    private ArrayList<String> getAvailableMissions() {
+
+        // Getting the username for it's use in the database
+        SessionManager manager = new SessionManager(getActivity());
+        String username = manager.getUsername();
+
+        // Tmp ArrayList for testing
+        ArrayList<String> missions = new ArrayList<String>(
+                Arrays.asList("Mission 10", "Mission 11", "Mission 12",
+                              "Mission 13", "Mission 14", "Mission 15"));
+
+        // Get data from DataBase
+
+
+        return missions;
+
+    }
+
+    private ArrayList<String> getMissions() {
+
+        // Getting the username for it's use in the database
+        SharedPreferences preferences = getActivity().getSharedPreferences("Login", MODE_PRIVATE);
+        String usr = preferences.getString("usr", null);
+
+        // Tmp ArrayList for testing
+        ArrayList<String> missions = new ArrayList<String>(
+                Arrays.asList("Mission 1", "Mission 2", "Mission 3", "Mission 4",
+                        "Mission 5", "Mission 6", "Mission 7", "Mission 8",
+                        "Mission 9"));
+
+        // Get data from DataBase
+
+
+        return missions;
+        
     }
 }

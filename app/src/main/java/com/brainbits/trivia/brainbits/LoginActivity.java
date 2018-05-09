@@ -1,7 +1,6 @@
 package com.brainbits.trivia.brainbits;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,18 +13,12 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-
 public class LoginActivity extends AppCompatActivity {
 
     // Vars
     private static final String TAG = "MapsActivity";
     private static final int ERROR_DIALOG_REQUEST = 9001;
+    SessionManager manager;
 
     // Widgets
     Button register;
@@ -39,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        manager = new SessionManager(this);
 
         register = (Button) findViewById(R.id.RegisterBtn);
         register.setOnClickListener(new View.OnClickListener() {
@@ -80,31 +75,10 @@ public class LoginActivity extends AppCompatActivity {
     // Login the user. cheks the credentials against the database
     private void loginUser(String usr, String pswd){
 
-        boolean isInfoOk = checkCredentials(usr,pswd);
-
-        if (isInfoOk){
-
-            writeToFile("Something",this);
-            final Intent i = new Intent(LoginActivity.this,MapsActivity.class);
-            Bundle bundle = new Bundle();
-            String usrname = username.getText().toString();
-            bundle.putString("UserName",usrname);
-            i.putExtras(bundle);
-            startActivity(i);
-            finish();
-        } else {
-            username.setText("");
-            password.setText("");
-            Toast.makeText(LoginActivity.this,"Username or Password incorrect",Toast.LENGTH_LONG).show();
-        }
+        manager.loginUser(usr,pswd);
 
     }
 
-    //Check credentials with database
-    private boolean checkCredentials(String usr, String pswd){
-        // Do something with database
-        return true;
-    }
 
     // Jumps to the AboutActivity
     private void showAbout(){
@@ -124,50 +98,6 @@ public class LoginActivity extends AppCompatActivity {
         final Intent i = new Intent(this,RegisterActivity.class);
         startActivity(i);
 
-    }
-
-    // reads from external memory
-    private String readFromFile(Context context) {
-
-        String ret = "";
-
-        try {
-            InputStream inputStream = context.openFileInput("config.txt");
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("ic_login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("ic_login activity", "Can not read file: " + e.toString());
-        }
-
-        return ret;
-    }
-
-    // writes to external memory
-    private void writeToFile(String data,Context context) {
-        Toast.makeText(this,"Entered write to file",Toast.LENGTH_LONG).show();
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("config.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(data);
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
     }
 
     // checks to see if the GoogleServices are available
@@ -191,6 +121,5 @@ public class LoginActivity extends AppCompatActivity {
         }
         return false;
     }
-
 
 }

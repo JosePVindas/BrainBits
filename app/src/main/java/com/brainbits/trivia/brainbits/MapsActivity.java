@@ -3,7 +3,6 @@ package com.brainbits.trivia.brainbits;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -32,7 +31,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import static com.google.android.gms.common.internal.safeparcel.SafeParcelable.NULL;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -46,10 +44,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean mPermissionsGranted = false;
     private Location mCurrentLocation;
 
-    private int mCurrentTaskId;
-
     private String UsrNm;
     private String pass;
+
+    private SessionManager manager;
 
     // Google maps API vars
     private GoogleMap mMap;
@@ -66,25 +64,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Dialog CorrectDialog;
     private Dialog WrongDialog;
 
-    // Handles everithyng that is to happen when the Activity first starts
+    // Handles everything that is to happen when the Activity first starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         this.mCurrentLocation = new Location("");
-        this.mCurrentTaskId = 0;
-
-//        Bundle itemIntent = getIntent().getExtras();
-//        this.UsrNm = itemIntent.getString("UserName");
-//        checkUsr();
-
-        SharedPreferences preferences = this.getSharedPreferences("Login", MODE_PRIVATE);
-
-        this.UsrNm =preferences.getString("usr", null);
-        this.pass = preferences.getString("pswd", null);
-
-
+        manager = new SessionManager(this);
 
         logOutDialog = new Dialog(this);
         CorrectDialog = new Dialog(this);
@@ -200,6 +187,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                manager.logoutUser();
                 final Intent i = new Intent(MapsActivity.this, LoginActivity.class);
                 startActivity(i);
             }
@@ -299,15 +287,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if(ContextCompat.checkSelfPermission(this.getApplicationContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                if(ContextCompat.checkSelfPermission(this.getApplicationContext(),WRITE_EXTERNAL) == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(this.getApplicationContext(),READ_EXTERNAL) == PackageManager.PERMISSION_GRANTED){
-                        mPermissionsGranted = true;
-                    } else {
-                        ActivityCompat.requestPermissions(this,permissions,PERMISSION_REQUEST_CODE);
-                    }
-                }else {
-                    ActivityCompat.requestPermissions(this,permissions,PERMISSION_REQUEST_CODE);
-                }
+                mPermissionsGranted = true;
             }else {
                 ActivityCompat.requestPermissions(this,permissions,PERMISSION_REQUEST_CODE);
             }
@@ -321,7 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isLocationCorrect() {
 
         getDeviceLocation();
-        float distance = getDistance(getCurrentTaskLocation(this.mCurrentTaskId),this.mCurrentLocation);
+        float distance = getDistance(getCurrentTaskLocation(),this.mCurrentLocation);
 
         if (distance > 30.0){
             return false;
@@ -338,30 +318,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    //get location from DB
-    private Location getCurrentTaskLocation(int taskId){
+    //get current task location
+    private Location getCurrentTaskLocation(){
         double lat;
         double lng;
-        Location location = new Location("");
 
-        // retrieve lat and long from Db
-        // lat = something;
-        // lng = somethingelse;
-        //location.setLatitude(lat);
-        //location.setLongitude(lng);
+        LatLng tmp = manager.getCurrentTaskLocation();
+
+        lat = tmp.latitude;
+        lng = tmp.longitude;
+
+        Location location = new Location("");
+        location.setLatitude(lat);
+        location.setLongitude(lng);
 
         return location;
     }
-
-    private void checkUsr(){
-        if (UsrNm.equals("Splash")){
-            UsrNm = "None";
-        } else {
-            Toast.makeText(MapsActivity.this,"Welcome " + UsrNm,Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-
 
 }

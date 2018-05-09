@@ -76,7 +76,7 @@
             android:layout_height="50dp"
             android:background="@drawable/button_style_accent"
             android:textColor="@color/white"
-            android:text="show clues"
+            android:text="ABORT MISSION"
             android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"/>
 

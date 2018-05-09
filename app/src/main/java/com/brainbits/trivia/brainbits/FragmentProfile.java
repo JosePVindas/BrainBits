@@ -2,7 +2,6 @@ package com.brainbits.trivia.brainbits;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.Fragment;
@@ -12,11 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class FragmentProfile  extends Fragment{
 
@@ -77,6 +73,9 @@ public class FragmentProfile  extends Fragment{
 
     private void getInfo() {
 
+        // Vars
+        SessionManager manager = new SessionManager(getActivity());
+
         // Widgets
         TextView rank;
         ImageView rankImg;
@@ -89,69 +88,71 @@ public class FragmentProfile  extends Fragment{
         rank = (TextView) view.findViewById(R.id.profile_rank);
         rankImg = (ImageView) view.findViewById(R.id.profile_rank_img);
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("Login", MODE_PRIVATE);
-
-        String usr = preferences.getString("usr", null);
-        String mail = preferences.getString("email","Unavailable Email");
+        String usr = manager.getUsername();
+        String mail = manager.getEmail();
 
         username.setText(usr);
         email.setText(mail);
 
-        int rank_num = preferences.getInt("rank",0);
+        int rank_num = manager.getRank();
 
-        switch (rank_num){
-
-            case 0: {
-
-                rank.setText("Newbie");
-                rankImg.setImageResource(R.drawable.rank_newbie);
-
-            }
-
-            case 1:{
-
-                rank.setText("Private");
-                rankImg.setImageResource(R.drawable.rank_private);
-
-            }
-
-            case 2:{
-
-                rank.setText("Private First Class");
-                rankImg.setImageResource(R.drawable.rank_private_first_class);
-
-            }
-
-            case 3: {
-
-                rank.setText("Sergeant");
-                rankImg.setImageResource(R.drawable.rank_sergeant);
-
-            }
-
-            case 4:{
-
-                rank.setText("Sergeant First class");
-                rankImg.setImageResource(R.drawable.rank_sergeant_first_class);
-
-            }
-
-            case 5:{
-
-                rank.setText("First Sergeant");
-                rankImg.setImageResource(R.drawable.rank_sergeant_first);
-
-            }
-
-            case 7:{
-
-                rank.setText("Sergeant Command Major");
-                rankImg.setImageResource(R.drawable.rank_sergeant_command_major);
-
-            }
+        rank.setText("Newbie");
+        rankImg.setImageResource(R.drawable.rank_newbie);
 
 
-
-        }
+//        switch (rank_num){
+//
+//            case 0: {
+//
+//                rank.setText("Newbie");
+//                rankImg.setImageResource(R.drawable.rank_newbie);
+//
+//            }
+//
+//            case 1:{
+//
+//                rank.setText("Private");
+//                rankImg.setImageResource(R.drawable.rank_private);
+//
+//            }
+//
+//            case 2:{
+//
+//                rank.setText("Private First Class");
+//                rankImg.setImageResource(R.drawable.rank_private_first_class);
+//
+//            }
+//
+//            case 3: {
+//
+//                rank.setText("Sergeant");
+//                rankImg.setImageResource(R.drawable.rank_sergeant);
+//
+//            }
+//
+//            case 4:{
+//
+//                rank.setText("Sergeant First class");
+//                rankImg.setImageResource(R.drawable.rank_sergeant_first_class);
+//
+//            }
+//
+//            case 5:{
+//
+//                rank.setText("First Sergeant");
+//                rankImg.setImageResource(R.drawable.rank_sergeant_first);
+//
+//            }
+//
+//            case 7:{
+//
+//                rank.setText("Sergeant Command Major");
+//                rankImg.setImageResource(R.drawable.rank_sergeant_command_major);
+//
+//            }
+//
+//
+//
+//        }
     }
 }

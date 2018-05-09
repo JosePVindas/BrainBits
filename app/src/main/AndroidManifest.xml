@@ -53,7 +53,8 @@
         <activity
             android:name=".GeneralActivity"
             android:label="@string/title_activity_general"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".messageViewActivity"></activity>
     </application>
 
 </manifest>
