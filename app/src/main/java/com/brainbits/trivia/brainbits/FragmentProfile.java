@@ -74,7 +74,7 @@ public class FragmentProfile  extends Fragment{
     private void getInfo() {
 
         // Vars
-        SessionManager manager = new SessionManager(getActivity());
+        final SessionManager manager = new SessionManager(getActivity());
 
         // Widgets
         TextView rank;
@@ -94,65 +94,69 @@ public class FragmentProfile  extends Fragment{
         username.setText(usr);
         email.setText(mail);
 
-        int rank_num = manager.getRank();
-
-        rank.setText("Newbie");
-        rankImg.setImageResource(R.drawable.rank_newbie);
+        final int rank_num = manager.getRank();
 
 
-//        switch (rank_num){
-//
-//            case 0: {
-//
-//                rank.setText("Newbie");
-//                rankImg.setImageResource(R.drawable.rank_newbie);
-//
-//            }
-//
-//            case 1:{
-//
-//                rank.setText("Private");
-//                rankImg.setImageResource(R.drawable.rank_private);
-//
-//            }
-//
-//            case 2:{
-//
-//                rank.setText("Private First Class");
-//                rankImg.setImageResource(R.drawable.rank_private_first_class);
-//
-//            }
-//
-//            case 3: {
-//
-//                rank.setText("Sergeant");
-//                rankImg.setImageResource(R.drawable.rank_sergeant);
-//
-//            }
-//
-//            case 4:{
-//
-//                rank.setText("Sergeant First class");
-//                rankImg.setImageResource(R.drawable.rank_sergeant_first_class);
-//
-//            }
-//
-//            case 5:{
-//
-//                rank.setText("First Sergeant");
-//                rankImg.setImageResource(R.drawable.rank_sergeant_first);
-//
-//            }
-//
-//            case 7:{
-//
-//                rank.setText("Sergeant Command Major");
-//                rankImg.setImageResource(R.drawable.rank_sergeant_command_major);
-//
-//            }
-//
-//
-//
-//        }
+        switch (rank_num){
+
+            case 0: {
+
+                rank.setText("Newbie");
+                rankImg.setImageResource(R.drawable.rank_newbie);
+                break;
+
+            }
+
+            case 1:{
+
+                rank.setText("Private");
+                rankImg.setImageResource(R.drawable.rank_private);
+                break;
+
+            }
+
+            case 2:{
+
+                rank.setText("Private First Class");
+                rankImg.setImageResource(R.drawable.rank_private_first_class);
+                break;
+
+            }
+
+            case 3: {
+
+                rank.setText("Sergeant");
+                rankImg.setImageResource(R.drawable.rank_sergeant);
+                break;
+
+            }
+
+            case 4:{
+
+                rank.setText("Sergeant First class");
+                rankImg.setImageResource(R.drawable.rank_sergeant_first_class);
+                break;
+
+            }
+
+            case 5:{
+
+                rank.setText("First Sergeant");
+                rankImg.setImageResource(R.drawable.rank_sergeant_first);
+                break;
+
+            }
+
+            case 7:{
+
+                rank.setText("Sergeant Command Major");
+                rankImg.setImageResource(R.drawable.rank_sergeant_command_major);
+                break;
+
+            }
+
+
+
+        }
     }
 }

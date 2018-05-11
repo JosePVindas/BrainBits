@@ -20,11 +20,18 @@ public class RegisterActivity extends AppCompatActivity {
 
     // Widgets
     private Button register;
+
+    private EditText name;
+    private EditText lastName;
+    private EditText sLastName;
+
     private EditText username;
     private EditText email;
     private EditText password;
     private EditText passwordR;
+
     private Spinner country;
+    private Spinner state;
     private Spinner city;
 
     // Handles everything to be done once the activity is created
@@ -34,6 +41,10 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         manager = new SessionManager(this);
+
+        name = (EditText) findViewById(R.id.name);
+        lastName = (EditText) findViewById(R.id.lastName);
+        sLastName = (EditText) findViewById(R.id.secondLastName);
 
         username = (EditText) findViewById(R.id.usr);
         email = (EditText) findViewById(R.id.mail);

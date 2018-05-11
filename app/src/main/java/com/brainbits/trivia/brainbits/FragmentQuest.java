@@ -43,8 +43,10 @@ public class FragmentQuest  extends Fragment{
 
         // String Arrays for the list Views
         // Access Database to getInfo
-          final ArrayList<String> mMissions = getMissions();
-        final ArrayList<String> pMissions = getAvailableMissions();
+
+        SessionManager manager = new SessionManager(getActivity());
+          final ArrayList<String> mMissions =manager.refreshMissions();
+        final ArrayList<String> pMissions = manager.getMissions();
 
         // List Views from the Layout File
         final ListView cMissions = (ListView)view.findViewById(R.id.current_missions);
@@ -189,40 +191,4 @@ public class FragmentQuest  extends Fragment{
 
     }
 
-    private ArrayList<String> getAvailableMissions() {
-
-        // Getting the username for it's use in the database
-        SessionManager manager = new SessionManager(getActivity());
-        String username = manager.getUsername();
-
-        // Tmp ArrayList for testing
-        ArrayList<String> missions = new ArrayList<String>(
-                Arrays.asList("Mission 10", "Mission 11", "Mission 12",
-                              "Mission 13", "Mission 14", "Mission 15"));
-
-        // Get data from DataBase
-
-
-        return missions;
-
-    }
-
-    private ArrayList<String> getMissions() {
-
-        // Getting the username for it's use in the database
-        SharedPreferences preferences = getActivity().getSharedPreferences("Login", MODE_PRIVATE);
-        String usr = preferences.getString("usr", null);
-
-        // Tmp ArrayList for testing
-        ArrayList<String> missions = new ArrayList<String>(
-                Arrays.asList("Mission 1", "Mission 2", "Mission 3", "Mission 4",
-                        "Mission 5", "Mission 6", "Mission 7", "Mission 8",
-                        "Mission 9"));
-
-        // Get data from DataBase
-
-
-        return missions;
-        
-    }
 }
