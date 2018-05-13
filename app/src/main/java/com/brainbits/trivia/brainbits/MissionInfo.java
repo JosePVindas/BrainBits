@@ -1,10 +1,11 @@
 package com.brainbits.trivia.brainbits;
 
+import android.util.JsonWriter;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class MissionInfo {
@@ -90,4 +91,7 @@ public class MissionInfo {
     public String getSponsor() {
         return this.mSponsor;
     }
+
+
 }
+

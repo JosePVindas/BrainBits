@@ -16,6 +16,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -44,8 +49,29 @@ public class FragmentQuest  extends Fragment{
         // String Arrays for the list Views
         // Access Database to getInfo
 
-        SessionManager manager = new SessionManager(getActivity());
-          final ArrayList<String> mMissions =manager.refreshMissions();
+        final SessionManager manager = new SessionManager(getActivity());
+        final JSONArray Missionarray = manager.retrieveMissions();
+
+
+          final ArrayList<String> mMissions = new ArrayList<>();
+
+          for (int i = 0; i < Missionarray.length(); i++) {
+
+              try {
+
+                  JSONObject json = Missionarray.getJSONObject(i);
+                  String mission_name = json.getString(manager.MISSION_NAME_TAG);
+                  mMissions.add(mission_name);
+
+              } catch (JSONException e) {
+
+                  e.printStackTrace();
+              }
+
+
+          }
+
+
         final ArrayList<String> pMissions = manager.getMissions();
 
         // List Views from the Layout File
@@ -65,24 +91,53 @@ public class FragmentQuest  extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 missionInfo.setContentView(R.layout.dialog_mission_description);
+
                 // Find dialog elements
 
                 // TextViews
-
-                // Set the mission title
                 TextView title = (TextView) missionInfo.findViewById(R.id.dialog_mission_title);
-                String tmp = mMissions.get(position);
-                title.setText(tmp);
-
-                // Get mission data from db
-
-                // Set mission info in the dialog
                 TextView sponsor = (TextView) missionInfo.findViewById(R.id.dialog_mission_sponsor);
                 TextView description = (TextView) missionInfo.findViewById(R.id.dialog_mission_description);
-                TextView clue = (TextView) missionInfo.findViewById(R.id.dialog_mission_first_clue);
+                TextView quest = (TextView) missionInfo.findViewById(R.id.dialog_mission_parent);
 
                 // ImageView
                 ImageView sponsorImg = (ImageView) missionInfo.findViewById(R.id.dialog_mission_sponsor_img);
+
+                String NAME = null;
+                String DESCRIPTION = null;
+                String SPONSOR = null;
+                String QUEST = null;
+
+
+                // Set the mission title
+                String tmp = mMissions.get(position);
+                try {
+
+                    JSONObject json = Missionarray.getJSONObject(position);
+
+                    NAME = json.getString(manager.MISSION_NAME_TAG);
+                    DESCRIPTION = json.getString(manager.MISSION_DESCRIPTION_TAG);
+                    SPONSOR = json.getString(manager.MISSION_SPONSOR_TAG);
+                    QUEST = json.getString(manager.MISSION_QUEST_TAG);
+
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+
+                title.setText(NAME);
+                description.setText(DESCRIPTION);
+                sponsor.setText(SPONSOR);
+                quest.setText(QUEST);
+
+                if (SPONSOR.equals("Pepsi")) {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_pepsi);
+                } else {
+                    sponsorImg.setImageResource(R.drawable.rank_sergeant_command_major);
+                }
+
+
 
                 // Buttons
                 Button ok = (Button) missionInfo.findViewById(R.id.dialog_mission_ok);
@@ -93,14 +148,15 @@ public class FragmentQuest  extends Fragment{
                     }
                 });
 
-                Button showClue = (Button) missionInfo.findViewById(R.id.dialog_mission_show_clues);
+                Button showClue = (Button) missionInfo.findViewById(R.id.dialog_mission_abort);
+                final String finalQUEST = QUEST;
+
                 showClue.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        pMissions.add(mMissions.get(position));
-                        adapter1.notifyDataSetChanged();
-                        abortMission(mMissions.get(position));
+                        abortMission(finalQUEST);
+
                         mMissions.remove(position);
                         adapter.notifyDataSetChanged();
                         missionInfo.dismiss();
@@ -173,21 +229,16 @@ public class FragmentQuest  extends Fragment{
 
     private void joinMission (String mission){
 
-        // Getting the username for it's use in the database
         SessionManager manager = new SessionManager(getActivity());
-        String username = manager.getUsername();
-
-       // Notify DB of new mission
-
+        manager.joinMission(mission);
     }
 
     private void abortMission (String mission){
 
         // Getting the username for it's use in the database
         SessionManager manager = new SessionManager(getActivity());
-        String username = manager.getUsername();
+        manager.abortMission(mission);
 
-        // Notify DB to remove mission
 
     }
 

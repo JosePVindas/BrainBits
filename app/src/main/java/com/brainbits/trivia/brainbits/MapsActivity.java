@@ -15,7 +15,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -30,6 +33,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -63,6 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Dialog logOutDialog;
     private Dialog CorrectDialog;
     private Dialog WrongDialog;
+    private Dialog MissionListDialog;
 
     // Handles everything that is to happen when the Activity first starts
     @Override
@@ -76,6 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         logOutDialog = new Dialog(this);
         CorrectDialog = new Dialog(this);
         WrongDialog = new Dialog(this);
+        MissionListDialog = new Dialog(this);
 
         initMap();
 
@@ -108,7 +119,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         taskDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkTask();
+                checkMission();
             }
         });
 
@@ -198,11 +209,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //Check if the current task has been done correctly
-    private void checkTask(){
+    private void checkTask(String mission, JSONArray missions) {
 
-        // check current task here, using current location for testing purposes
-        //boolean done = isLocationCorrect();
         boolean done = false;
+
+        for (int i = 0; i < missions.length(); i++){
+
+            try {
+
+                JSONObject tmp = missions.getJSONObject(i);
+                String tmpname = tmp.getString(manager.MISSION_NAME_TAG);
+
+                if (tmpname.equals(mission)) {
+
+                    double lat = tmp.getDouble(manager.MISSION_LATITULE_TAG);
+                    double lng = tmp.getDouble(manager.MISSION_LONGITUDE_TAG);
+
+                    Location sol = new Location("");
+                    sol.setLatitude(lat);
+                    sol.setLongitude(lng);
+
+                    getDeviceLocation();
+                    float distance = getDistance(mCurrentLocation,sol);
+                    float tolerance = 30;
+
+                    if (distance < tolerance || distance == tolerance) {
+
+                        done = true;
+
+                    }
+
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
 
         if (done){
             CorrectDialog.setContentView(R.layout.dialog_correct_location);
@@ -297,42 +343,67 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // Compares que current location to the QuestLocation and decides if it is correct or incorrect
-    private boolean isLocationCorrect() {
 
-        getDeviceLocation();
-        float distance = getDistance(getCurrentTaskLocation(),this.mCurrentLocation);
+    private void checkMission () {
 
-        if (distance > 30.0){
-            return false;
-        } else {
-            return true;
+        MissionListDialog.setContentView(R.layout.dialog_mission_list);
+        Button ok = (Button)MissionListDialog.findViewById(R.id.dialog_mission_list_ok);
+        ListView list = (ListView) MissionListDialog.findViewById(R.id.dialog_mission_list);
+
+        final JSONArray Missionarray = manager.retrieveMissions();
+
+
+        final ArrayList<String> mMissions = new ArrayList<>();
+
+        for (int i = 0; i < Missionarray.length(); i++) {
+
+            try {
+
+                JSONObject json = Missionarray.getJSONObject(i);
+                String mission_name = json.getString(manager.MISSION_NAME_TAG);
+                mMissions.add(mission_name);
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+
         }
 
+        final ArrayAdapter adapter = new ArrayAdapter<String>(MapsActivity.this,
+                android.R.layout.simple_list_item_1,mMissions);
+
+        list.setAdapter(adapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                checkTask(mMissions.get(position),Missionarray);
+                MissionListDialog.dismiss();
+            }
+        });
+
+
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MissionListDialog.dismiss();
+            }
+        });
+
+
+        MissionListDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        MissionListDialog.show();
     }
+
 
     //return the distance between two locations
     private float getDistance(Location current, Location point){
 
         return current.distanceTo(point);
 
-    }
-
-    //get current task location
-    private Location getCurrentTaskLocation(){
-        double lat;
-        double lng;
-
-        LatLng tmp = manager.getCurrentTaskLocation();
-
-        lat = tmp.latitude;
-        lng = tmp.longitude;
-
-        Location location = new Location("");
-        location.setLatitude(lat);
-        location.setLongitude(lng);
-
-        return location;
     }
 
 }

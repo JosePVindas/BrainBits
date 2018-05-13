@@ -31,7 +31,7 @@
 
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="450dp">
+                android:layout_height="match_parent">
                 <TableLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -98,8 +98,8 @@
                         android:layout_marginTop="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select a Country"
-                        android:textSize="12dp"
+                        android:hint="Select a Country"
+                        android:textSize="17dp"
                         android:layout_gravity="center_horizontal"/>
 
                     <Spinner
@@ -112,8 +112,8 @@
                         android:layout_marginTop="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select a State"
-                        android:textSize="12dp"
+                        android:hint="Select a State"
+                        android:textSize="17dp"
                         android:layout_gravity="center_horizontal"/>
 
                     <Spinner
@@ -126,8 +126,8 @@
                         android:layout_marginTop="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select a City"
-                        android:textSize="12dp"
+                        android:hint="Select a City"
+                        android:textSize="17dp"
                         android:layout_gravity="center_horizontal"/>
 
                     <Spinner
@@ -136,23 +136,23 @@
                         android:id="@+id/city_spinner"
                         android:layout_margin="10dp"></Spinner>
 
-
+                    <Button
+                        android:id="@+id/registerBtn"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="15dp"
+                        android:background="@drawable/button_style_accent"
+                        android:text="Join the army"
+                        android:textColor="#fff"
+                        android:textSize="15dp" />
 
                 </TableLayout>
 
             </ScrollView>
 
 
-            <Button
-                android:id="@+id/registerBtn"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/button_style_accent"
-                android:text="Join the army"
-                android:textColor="#fff"
-                android:textSize="15dp" />
+
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

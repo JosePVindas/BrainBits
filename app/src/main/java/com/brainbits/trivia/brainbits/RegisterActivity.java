@@ -58,19 +58,26 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String nm = name.getText().toString();
+                String lnm = lastName.getText().toString();
+                String slnm = sLastName.getText().toString();
+
                 String usr = username.getText().toString();
                 String mail = email.getText().toString();
                 String pswd = password.getText().toString();
                 String pswdR = passwordR.getText().toString();
+
                 //String ctry = country.getSelectedItem().toString();
                 //String cty = city.getSelectedItem().toString();
 
                 String ctry = "hello";
+                String state = "Hello";
                 String cty = "hello";
 
                 if (pswd.equals(pswdR)){
 
-                    manager.createLoginSession(usr,mail,pswd,ctry,cty);
+                    manager.createLoginSession(nm, lnm, slnm, usr,mail,pswd,ctry, state, cty);
 
                 } else {
                     username.setText("");

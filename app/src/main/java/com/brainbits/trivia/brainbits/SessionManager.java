@@ -3,6 +3,7 @@ package com.brainbits.trivia.brainbits;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -10,6 +11,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,10 +30,11 @@ public class SessionManager {
     private SharedPreferences.Editor editor;
     private Context _context;
     int PRIVATE_MODE = 0;
-    private static final String PREF_NAME = "BrainBitsPreferences";
     private ArrayList<MissionInfo> Missions;
 
     // Shared Preferences Keys for login
+    private static final String PREF_NAME = "BrainBitsPreferences";
+
     private static final String IS_LOGIN = "IsLoggedIn";
     private static final String KEY_USERNAME = "USERNAME";
     private static final String KEY_PASSWORD = "USER_PASSWORD";
@@ -47,6 +58,27 @@ public class SessionManager {
     private static final String CITY_TAG = "CITY";
 
     private static final String RANK_TAG = "RANK";
+
+    public static final String MISSION_TAG = "MISSION";
+    public static final String MISSION_NAME_TAG = "MISSION_NAME";
+    public static final String MISSION_DESCRIPTION_TAG = "MISSION_DESCRIPTION";
+    public static final String MISSION_SPONSOR_TAG = "MISSION_SPONSOR";
+    public static final String MISSION_QUEST_TAG = "MISION_QUEST";
+    public static final String MISSION_LATITULE_TAG = "LATITULE";
+    public static final String MISSION_LONGITUDE_TAG = "LONGITUDE";
+
+
+
+
+    // Server Request tags
+    private static final String USER_INFO = "USER_INFO";
+    private static final String MISSIONS = "MISSIONS";
+    private static final String CLUE_LIST = "CLUE_LIST";
+
+    private static final String ABORT_MISSION = "ABORT_MISSION";
+    private static final String JOIN_MISSION = "JOIN_MISSION";
+    private static final String COMPLETE_MISSION = "COMPLETE_MISSION";
+    private static final String CREATE_USER = "CREATE_USER";
 
 //    private static final String KEY_INBOX = "USER_MESSAGES";
 //    private static final String KEY_MISSIONS = "USER_MISSIONS";
@@ -73,7 +105,7 @@ public class SessionManager {
     // Create a login session where all the important information about the user is stored
     public void createLoginSession (
             String name, String lastName, String sLastName, String username,
-            String email, String password, String country, String state, String city, int rank) {
+            String email, String password, String country, String state, String city) {
 
         // validate information before storing in Shared Preferences
         if (isUserInfoOk(username,email)){
@@ -186,6 +218,8 @@ public class SessionManager {
             user.put(CITY_TAG, city);
 
             user.put(RANK_TAG, rank);
+
+//            sendToServer(user);
 
 
         } catch (JSONException e) {
@@ -303,24 +337,83 @@ public class SessionManager {
     }
 
     // Get available missions
-    public void retrieveMissions() {
+    public JSONArray retrieveMissions() {
 
-        ArrayList<MissionInfo> missions = new ArrayList<>();
+//        JSONObject mMissions = getFromServer(MISSIONS);
+        JSONArray missionInfo = new JSONArray();
 
-        // Ask database for available missions
+//        try {
+//
+//            missionInfo = mMissions.getJSONArray(MISSION_TAG);
+//
+//
+//        } catch (JSONException e) {
+//
+//            e.printStackTrace();
+//        }
+//
+//        return missionInfo;
 
 
-        // mission name Arrays
-        ArrayList<String> names = new ArrayList<String>(
-                Arrays.asList("Mission 10", "Mission 11", "Mission 12",
-                        "Mission 13", "Mission 14", "Mission 15")
-        );
 
-        // mission descriptiono Arrays
-        ArrayList<String> descriptions = new ArrayList<String>(
-                Arrays.asList("Description 1", "Description 2", "Description 3",
-                        "Description 4", "Description 5", "Description 6")
-        );
+        double lat = 0.0;
+        double lng = 0.0;
+
+        try {
+
+            JSONObject mission1 = new JSONObject();
+            mission1.put(MISSION_NAME_TAG,"Name 1");
+            mission1.put(MISSION_DESCRIPTION_TAG, "Description 1");
+            mission1.put(MISSION_QUEST_TAG, "Quest title 1");
+            mission1.put(MISSION_SPONSOR_TAG, "Pepsi");
+            mission1.put(MISSION_LATITULE_TAG,lat);
+            mission1.put(MISSION_LONGITUDE_TAG,lng);
+
+
+            JSONObject mission2 = new JSONObject();
+            mission2.put(MISSION_NAME_TAG,"Name 2");
+            mission2.put(MISSION_DESCRIPTION_TAG, "Description 2");
+            mission2.put(MISSION_QUEST_TAG, "Quest title 2");
+            mission2.put(MISSION_SPONSOR_TAG, "Pepsi");
+            mission2.put(MISSION_LATITULE_TAG,lat);
+            mission2.put(MISSION_LONGITUDE_TAG,lng);
+
+            JSONObject mission3 = new JSONObject();
+            mission3.put(MISSION_NAME_TAG,"Name 3");
+            mission3.put(MISSION_DESCRIPTION_TAG, "Description 3");
+            mission3.put(MISSION_QUEST_TAG, "Quest title 3");
+            mission3.put(MISSION_SPONSOR_TAG, "Pepsi");
+            mission3.put(MISSION_LATITULE_TAG,lat);
+            mission3.put(MISSION_LONGITUDE_TAG,lng);
+
+            JSONObject mission4 = new JSONObject();
+            mission4.put(MISSION_NAME_TAG,"Name 4");
+            mission4.put(MISSION_DESCRIPTION_TAG, "Description 4");
+            mission4.put(MISSION_QUEST_TAG, "Quest title 4");
+            mission4.put(MISSION_SPONSOR_TAG, "Pepsi");
+            mission4.put(MISSION_LATITULE_TAG,lat);
+            mission4.put(MISSION_LONGITUDE_TAG,lng);
+
+            JSONObject mission5 = new JSONObject();
+            mission5.put(MISSION_NAME_TAG,"Name 5");
+            mission5.put(MISSION_DESCRIPTION_TAG, "Description 5");
+            mission5.put(MISSION_QUEST_TAG, "Quest title 5");
+            mission5.put(MISSION_SPONSOR_TAG, "Pepsi");
+            mission5.put(MISSION_LATITULE_TAG,lat);
+            mission5.put(MISSION_LONGITUDE_TAG,lng);
+
+            missionInfo.put(mission1);
+            missionInfo.put(mission2);
+            missionInfo.put(mission3);
+            missionInfo.put(mission4);
+            missionInfo.put(mission5);
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        }
+
+        return missionInfo;
 
 
 
@@ -334,6 +427,169 @@ public class SessionManager {
         return names;
 
     }
+
+    // Get information from server
+    private JSONObject getFromServer (String request) {
+
+        // Url of the server with which the connection will be established.
+        URL url = null;
+        String outputString = null;
+        JSONObject data = null;
+        String username = pref.getString(KEY_USERNAME, null);
+
+        try {
+
+            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
+
+
+        } catch (MalformedURLException e) {
+
+            e.printStackTrace();
+        }
+        try {
+
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();//incializa el cliente http
+
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());//instrucción para hacer el GET
+            urlConnection.disconnect();//siempre se tiene que cerrar la conexion despues de usarse
+
+            outputString = in.toString();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
+
+        try {
+
+            data = new JSONObject(outputString);
+
+        } catch (Throwable t) {
+
+            t.printStackTrace();
+
+        }
+
+        return data;
+
+    }
+
+    // send JSON to the server
+    private void sendToServer (JSONObject json, String request) {
+
+        // Obtener la conexión
+        HttpURLConnection con = null;
+        URL url = null;
+        String username = pref.getString(KEY_USERNAME, null);
+
+        try {
+
+            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/POST/" +username + "/" + request);
+
+
+        } catch (MalformedURLException e) {
+
+            e.printStackTrace();
+        }
+
+
+        try {
+            // Convert Json to String
+            String data = json.toString();
+
+            con = (HttpURLConnection)url.openConnection();
+
+            // Set up post
+            con.setDoOutput(true);
+
+            // Get string size
+            con.setFixedLengthStreamingMode(data.getBytes().length);
+
+            // Set up data
+            OutputStream out = new BufferedOutputStream(con.getOutputStream());
+
+            // Send data
+            out.write(data.getBytes());
+            out.flush();
+            out.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(con!=null)
+                con.disconnect();
+        }
+
+    }
+
+    // send JSON to the server
+    private void sendToServer (String data, String request) {
+
+        // Obtener la conexión
+        HttpURLConnection con = null;
+        URL url = null;
+        String username = pref.getString(KEY_USERNAME, null);
+
+        try {
+
+            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/POST/" +username + "/" + request);
+
+
+        } catch (MalformedURLException e) {
+
+            e.printStackTrace();
+        }
+
+
+        try {
+
+            con = (HttpURLConnection)url.openConnection();
+
+            // Set up post
+            con.setDoOutput(true);
+
+            // Get string size
+            con.setFixedLengthStreamingMode(data.getBytes().length);
+
+            // Set up data
+            OutputStream out = new BufferedOutputStream(con.getOutputStream());
+
+            // Send data
+            out.write(data.getBytes());
+            out.flush();
+            out.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(con!=null)
+                con.disconnect();
+        }
+
+    }
+
+    // request to abort the mission
+    public void abortMission (String mission) {
+
+//        sendToServer(mission, ABORT_MISSION);
+
+    }
+
+    // Request to join a mission
+    public void joinMission (String mission) {
+
+//        sendToServer(mission, JOIN_MISSION);
+
+    }
+
+    // Notify server of completed mission
+    public void completeMission (String mission) {
+
+//        sendToServer(mission, COMPLETE_MISSION);
+
+    }
+
 
     // INBOX REFRESH METHODS
 
