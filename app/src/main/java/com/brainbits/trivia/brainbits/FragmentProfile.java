@@ -34,6 +34,7 @@ public class FragmentProfile  extends Fragment{
 
         // Widgets
         Button profile_logout;
+        TextView log;
 
         getInfo();
 
@@ -68,6 +69,15 @@ public class FragmentProfile  extends Fragment{
             }
         });
 
+        log = (TextView) view.findViewById(R.id.show_log);
+        log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent i = new Intent(getActivity(),logActivity.class);
+                startActivity(i);
+            }
+        });
+
         return view;
     }
 
@@ -87,6 +97,7 @@ public class FragmentProfile  extends Fragment{
         email = (TextView) view.findViewById(R.id.profile_mail);
         rank = (TextView) view.findViewById(R.id.profile_rank);
         rankImg = (ImageView) view.findViewById(R.id.profile_rank_img);
+
 
         String usr = manager.getUsername();
         String mail = manager.getEmail();
@@ -147,7 +158,7 @@ public class FragmentProfile  extends Fragment{
 
             }
 
-            case 7:{
+            case 6:{
 
                 rank.setText("Sergeant Command Major");
                 rankImg.setImageResource(R.drawable.rank_sergeant_command_major);

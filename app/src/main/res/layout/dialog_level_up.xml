@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="400dp"
+    android:orientation="vertical"
+    android:background="@drawable/dialog_white_shape"
+    android:layout_gravity="center">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:text="Congratulations!"
+        android:textAlignment="center" />
+
+    <ImageView
+        android:id="@+id/level_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/rank_newbie"/>
+
+    <TextView
+        android:id="@+id/level_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="20dp"
+        android:text="You have leveled up!"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorAccent"
+        android:textSize="15dp"
+        android:text="You have leveled up!"
+        android:textAlignment="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/level_ok"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_style_accent"
+            android:textColor="@color/white"
+            android:text="OK"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

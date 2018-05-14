@@ -66,6 +66,12 @@ public class SessionManager {
     public static final String MISSION_QUEST_TAG = "MISION_QUEST";
     public static final String MISSION_LATITULE_TAG = "LATITULE";
     public static final String MISSION_LONGITUDE_TAG = "LONGITUDE";
+    public static final String CLUE_LIST = "CLUE_LIST";
+    public static final String MISSION_CLUE_TAG = "CLUE";
+
+    public static final String LOG_TAG = "LOG_TAG";
+
+    public static final String MISSION_COMPLETED = "MISSION_COMPLETED";
 
 
 
@@ -73,12 +79,17 @@ public class SessionManager {
     // Server Request tags
     private static final String USER_INFO = "USER_INFO";
     private static final String MISSIONS = "MISSIONS";
-    private static final String CLUE_LIST = "CLUE_LIST";
+
 
     private static final String ABORT_MISSION = "ABORT_MISSION";
     private static final String JOIN_MISSION = "JOIN_MISSION";
     private static final String COMPLETE_MISSION = "COMPLETE_MISSION";
     private static final String CREATE_USER = "CREATE_USER";
+    private static final String COMPLETED_MISSIONS = "COMPLETED_MISSIONS";
+
+    private static final String UPDATE_RANK = "UPDATE_RANK";
+    private static final String LOG = "LOG";
+
 
 //    private static final String KEY_INBOX = "USER_MESSAGES";
 //    private static final String KEY_MISSIONS = "USER_MISSIONS";
@@ -182,12 +193,6 @@ public class SessionManager {
         return rank;
     }
 
-    // update user rank in shared preferences
-    public void setRank (int rank) {
-
-        editor.putInt(KEY_RANK, rank);
-        editor.commit();
-    }
 
 
 
@@ -255,7 +260,16 @@ public class SessionManager {
         int rank = 0;
         int completed_missions = 0;
 
-        // get email and rank from database
+//        JSONObject json = getFromServer(USER_INFO);
+//            try {
+//
+//                rank = json.getInt(RANK_TAG);
+//                email = json.getString(EMAIL_TAG);
+//                completed_missions = json.getInt(MISSION_COMPLETED);
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
 
         editor.putBoolean(IS_LOGIN, true);
 
@@ -271,7 +285,19 @@ public class SessionManager {
     // update user rank in data base
     private void updateRank(int rank) {
 
-        // update rank in data base
+        editor.putInt(KEY_RANK, rank);
+        editor.commit();
+
+        JSONObject user = new JSONObject();
+        try {
+
+            user.put(USERNAME_TAG, pref.getString(KEY_USERNAME, null));
+            user.put(RANK_TAG, rank);
+//            sendToServer(user, UPDATE_RANK);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -280,47 +306,44 @@ public class SessionManager {
 
         int completed_missions = pref.getInt(KEY_COMPLETED_MISSIONS,0);
 
-
-        if (completed_missions >= 40) {
-            editor.putInt(KEY_RANK, 7);
-        }
-
         if (completed_missions >= 20 && completed_missions < 30) {
-            editor.putInt(KEY_RANK, 6);
+
+            updateRank(6);
         }
 
         if (completed_missions >= 15 && completed_missions < 20) {
-            editor.putInt(KEY_RANK, 5);
+
+            updateRank(5);
         }
 
         if (completed_missions >= 10 && completed_missions < 15) {
-            editor.putInt(KEY_RANK, 4);
+
+        }
+            updateRank(4);
+
+        if (completed_missions >= 5 && completed_missions < 10) {
+
+            updateRank(3);
         }
 
         if (completed_missions >= 5 && completed_missions < 10) {
-            editor.putInt(KEY_RANK, 3);
-        }
 
-        if (completed_missions >= 5 && completed_missions < 10) {
-            editor.putInt(KEY_RANK, 2);
+            updateRank(2);
         }
 
         if (completed_missions >= 1 && completed_missions < 5) {
-            editor.putInt(KEY_RANK, 1);
+
+            updateRank(1);
         }
 
         if (completed_missions == 0) {
+
             editor.putInt(KEY_RANK, 0);
+            editor.commit();
         }
 
     }
 
-    // Get the current task location from the database
-    public LatLng getCurrentTaskLocation () {
-
-        LatLng tmp = new LatLng(32,45);
-        return tmp;
-    }
 
     // refresh Missions
     public ArrayList<String> refreshMissions() {
@@ -587,8 +610,15 @@ public class SessionManager {
     public void completeMission (String mission) {
 
 //        sendToServer(mission, COMPLETE_MISSION);
+        int old = pref.getInt(KEY_COMPLETED_MISSIONS,0);
+        int New = old + 1;
+
+        editor.putInt(KEY_COMPLETED_MISSIONS, New);
+        editor.commit();
+        setRank();
 
     }
+
 
 
     // INBOX REFRESH METHODS
@@ -596,6 +626,70 @@ public class SessionManager {
 
 
     // Asks data base for new messages
+    public JSONObject getMessages () {
+
+//        JSONObject messages = getFromServer(CLUE_LIST);
+
+        JSONObject missions = new JSONObject();
+        JSONObject tmp = new JSONObject();
+        JSONArray array = new JSONArray();
+
+        ArrayList<String> clues = new ArrayList<>(Arrays.asList("Clue 1", "Clue 2", "Clue 3", "Clue 4"));
+
+
+
+            try {
+
+                for (int i = 0; i < 34; i++) {
+
+                    tmp.put(MISSION_NAME_TAG, "Mission " + i);
+                    tmp.put(MISSION_DESCRIPTION_TAG, "Description" + i);
+                    tmp.put(MISSION_CLUE_TAG, clues);
+
+
+                    array.put(tmp);
+                }
+
+
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            try {
+
+                missions.put(CLUE_LIST,array);
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+//        return messages;
+        return missions;
+    }
+
+    public JSONObject getLog () {
+
+//        JSONObject log = getFromServer(LOG);
+        JSONObject log = new JSONObject();
+
+        ArrayList<String> logMessages = new ArrayList<>(
+                Arrays.asList("This happened", "That happened",
+                        "This also happened", "That happened as well"));
+
+        try {
+
+            log.put(LOG_TAG,logMessages);
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        }
+
+        return log;
+    }
 
 
 }

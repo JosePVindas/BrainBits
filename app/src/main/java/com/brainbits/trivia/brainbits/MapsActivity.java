@@ -18,7 +18,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -73,6 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Dialog CorrectDialog;
     private Dialog WrongDialog;
     private Dialog MissionListDialog;
+    private Dialog levelUpDialog;
 
     // Handles everything that is to happen when the Activity first starts
     @Override
@@ -87,6 +90,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CorrectDialog = new Dialog(this);
         WrongDialog = new Dialog(this);
         MissionListDialog = new Dialog(this);
+        levelUpDialog = new Dialog(this);
 
         initMap();
 
@@ -230,7 +234,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     sol.setLongitude(lng);
 
                     getDeviceLocation();
-                    float distance = getDistance(mCurrentLocation,sol);
+                    float distance = getDistance(mCurrentLocation,mCurrentLocation);
                     float tolerance = 30;
 
                     if (distance < tolerance || distance == tolerance) {
@@ -251,13 +255,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         if (done){
+
+            boolean isLevelup = false;
+
+            int current = manager.getRank();
+            manager.completeMission(mission);
+            int newValue = manager.getRank();
+
+            if (newValue > current) {
+
+                isLevelup = true;
+
+            }
+
+
+
+
+
             CorrectDialog.setContentView(R.layout.dialog_correct_location);
             Button ok = (Button)CorrectDialog.findViewById(R.id.correct_ok);
 
+            final boolean finalIsLevelup = isLevelup;
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CorrectDialog.dismiss();
+
+                    if (finalIsLevelup) {
+
+                        CorrectDialog.dismiss();
+                        levelUp();
+
+                    } else {
+                        CorrectDialog.dismiss();
+                    }
                 }
             });
 
@@ -403,6 +433,90 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private float getDistance(Location current, Location point){
 
         return current.distanceTo(point);
+
+    }
+
+    public void levelUp () {
+
+        levelUpDialog.setContentView(R.layout.dialog_level_up);
+
+        Button ok = (Button) levelUpDialog.findViewById(R.id.level_ok);
+        TextView rank = (TextView) levelUpDialog.findViewById(R.id.level_name);
+        ImageView rankImg = (ImageView) levelUpDialog.findViewById(R.id.level_image);
+
+        int rank_num = manager.getRank();
+
+        switch (rank_num){
+
+            case 0: {
+
+                rank.setText("Newbie");
+                rankImg.setImageResource(R.drawable.rank_newbie);
+                break;
+
+            }
+
+            case 1:{
+
+                rank.setText("Private");
+                rankImg.setImageResource(R.drawable.rank_private);
+                break;
+
+            }
+
+            case 2:{
+
+                rank.setText("Private First Class");
+                rankImg.setImageResource(R.drawable.rank_private_first_class);
+                break;
+
+            }
+
+            case 3: {
+
+                rank.setText("Sergeant");
+                rankImg.setImageResource(R.drawable.rank_sergeant);
+                break;
+
+            }
+
+            case 4:{
+
+                rank.setText("Sergeant First class");
+                rankImg.setImageResource(R.drawable.rank_sergeant_first_class);
+                break;
+
+            }
+
+            case 5:{
+
+                rank.setText("First Sergeant");
+                rankImg.setImageResource(R.drawable.rank_sergeant_first);
+                break;
+
+            }
+
+            case 6:{
+
+                rank.setText("Sergeant Command Major");
+                rankImg.setImageResource(R.drawable.rank_sergeant_command_major);
+                break;
+
+            }
+
+
+
+        }
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                levelUpDialog.dismiss();
+            }
+        });
+
+        levelUpDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        levelUpDialog.show();
 
     }
 

@@ -9,17 +9,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class messageViewActivity extends AppCompatActivity {
 
     // Vars
     private ArrayList<String> messages;
+    private SessionManager manager;
+    private String description;
 
     // Widgets
-    TextView sender;
-    TextView descript;
-    ListView messageList;
+    private TextView sender;
+    private TextView descript;
+    private ListView messageList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +34,45 @@ public class messageViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message_view);
 
         Bundle itemIntent = getIntent().getExtras();
-        this.messages = itemIntent.getStringArrayList("Messages");
+        String Name = itemIntent.getString("message Name");
+
+        manager = new SessionManager(this);
+
+        JSONObject json = manager.getMessages();
+
+        try {
+
+            JSONArray array =  json.getJSONArray(manager.CLUE_LIST);
+
+            for (int i = 0; i < array.length(); i++) {
+
+                JSONObject tmp = array.getJSONObject(i);
+                String tmpNmae = tmp.getString(manager.MISSION_NAME_TAG);
+
+                if (tmpNmae.equals(Name)) {
+                    messages = (ArrayList<String>) tmp.get(manager.MISSION_CLUE_TAG);
+                    description = tmp.getString(manager.MISSION_DESCRIPTION_TAG);
+                }
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
         sender = (TextView) findViewById(R.id.sender_tv);
         descript = (TextView) findViewById(R.id.description_tv);
 
         messageList = (ListView) findViewById(R.id.messages_lv);
 
-        sender.setText(messages.get(0));
-        messages.remove(0);
+        sender.setText(Name);
+        descript.setText(description);
 
-        descript.setText(messages.get(0));
-        messages.remove(0);
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,messages);
         messageList.setAdapter(adapter);
 
-        messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Toast.makeText(messageViewActivity.this,"Coming soon!", Toast.LENGTH_LONG).show();
-
-            }
-        });
     }
 }

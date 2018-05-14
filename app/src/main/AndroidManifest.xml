@@ -16,9 +16,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_application_main"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_application_main"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Splash">
@@ -49,12 +49,12 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".ProfileActivity" />
         <activity
             android:name=".GeneralActivity"
             android:label="@string/title_activity_general"
             android:theme="@style/AppTheme" />
-        <activity android:name=".messageViewActivity"></activity>
+        <activity android:name=".messageViewActivity" />
+        <activity android:name=".logActivity"></activity>
     </application>
 
 </manifest>
