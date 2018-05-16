@@ -56,6 +56,7 @@ public class SessionManager {
     private static final String COUNTRY_TAG = "COUNTRY";
     private static final String STATE_TAG = "STATE";
     private static final String CITY_TAG = "CITY";
+    private static final String ADDRESS_TAG = "ADDRESS";
 
     private static final String RANK_TAG = "RANK";
 
@@ -70,6 +71,9 @@ public class SessionManager {
     public static final String MISSION_CLUE_TAG = "CLUE";
 
     public static final String LOG_TAG = "LOG_TAG";
+
+    public static final String MISSION_END_DATE_TAG = "MISSION_END_DATE";
+    public static final String MISSION_START_DATE_TAG = "MISSION_START_DATE";
 
     public static final String MISSION_COMPLETED = "MISSION_COMPLETED";
 
@@ -116,7 +120,8 @@ public class SessionManager {
     // Create a login session where all the important information about the user is stored
     public void createLoginSession (
             String name, String lastName, String sLastName, String username,
-            String email, String password, String country, String state, String city) {
+            String email, String password, String country, String state, String city,
+            String address) {
 
         // validate information before storing in Shared Preferences
         if (isUserInfoOk(username,email)){
@@ -131,7 +136,7 @@ public class SessionManager {
             editor.putInt(KEY_COMPLETED_MISSIONS, 0);
             editor.commit();
 
-            createUserAccount(name, lastName, sLastName, username,email,password,country, state, city,0);
+            createUserAccount(name, lastName, sLastName, username,email,password,country, state, city, address,0);
 
             final Intent i = new Intent(_context ,MapsActivity.class);
             _context.startActivity(i);
@@ -203,7 +208,8 @@ public class SessionManager {
     // Save user details in shared preferences and data base
     private void createUserAccount (
             String name, String lastName, String sLastName, String username,
-            String email, String password, String country, String state, String city, int rank) {
+            String email, String password, String country, String state, String city,
+            String address, int rank) {
 
         // Submit all information to database
         JSONObject user = new JSONObject();
@@ -222,6 +228,8 @@ public class SessionManager {
             user.put(STATE_TAG, state);
             user.put(CITY_TAG, city);
 
+            user.put(ADDRESS_TAG,address);
+
             user.put(RANK_TAG, rank);
 
 //            sendToServer(user);
@@ -230,6 +238,8 @@ public class SessionManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+//        sendToServer(user,CREATE_USER);
 
     }
 
@@ -389,8 +399,9 @@ public class SessionManager {
             mission1.put(MISSION_DESCRIPTION_TAG, "Description 1");
             mission1.put(MISSION_QUEST_TAG, "Quest title 1");
             mission1.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission1.put(MISSION_LATITULE_TAG,lat);
-            mission1.put(MISSION_LONGITUDE_TAG,lng);
+            mission1.put(MISSION_LATITULE_TAG,9.8774989);
+            mission1.put(MISSION_LONGITUDE_TAG,-83.9316223);
+            mission1.put(MISSION_END_DATE_TAG, "10/06/2018");
 
 
             JSONObject mission2 = new JSONObject();
@@ -400,6 +411,7 @@ public class SessionManager {
             mission2.put(MISSION_SPONSOR_TAG, "Pepsi");
             mission2.put(MISSION_LATITULE_TAG,lat);
             mission2.put(MISSION_LONGITUDE_TAG,lng);
+            mission2.put(MISSION_END_DATE_TAG, "10/06/2018");
 
             JSONObject mission3 = new JSONObject();
             mission3.put(MISSION_NAME_TAG,"Name 3");
@@ -408,6 +420,7 @@ public class SessionManager {
             mission3.put(MISSION_SPONSOR_TAG, "Pepsi");
             mission3.put(MISSION_LATITULE_TAG,lat);
             mission3.put(MISSION_LONGITUDE_TAG,lng);
+            mission3.put(MISSION_END_DATE_TAG, "10/06/2018");
 
             JSONObject mission4 = new JSONObject();
             mission4.put(MISSION_NAME_TAG,"Name 4");
@@ -416,6 +429,7 @@ public class SessionManager {
             mission4.put(MISSION_SPONSOR_TAG, "Pepsi");
             mission4.put(MISSION_LATITULE_TAG,lat);
             mission4.put(MISSION_LONGITUDE_TAG,lng);
+            mission4.put(MISSION_END_DATE_TAG, "10/06/2018");
 
             JSONObject mission5 = new JSONObject();
             mission5.put(MISSION_NAME_TAG,"Name 5");
@@ -424,6 +438,7 @@ public class SessionManager {
             mission5.put(MISSION_SPONSOR_TAG, "Pepsi");
             mission5.put(MISSION_LATITULE_TAG,lat);
             mission5.put(MISSION_LONGITUDE_TAG,lng);
+            mission5.put(MISSION_END_DATE_TAG, "10/06/2018");
 
             missionInfo.put(mission1);
             missionInfo.put(mission2);
@@ -607,16 +622,50 @@ public class SessionManager {
     }
 
     // Notify server of completed mission
-    public void completeMission (String mission) {
+    public void completeMission (String mission, String quest, String date) {
 
-//        sendToServer(mission, COMPLETE_MISSION);
+//        sendToServer(mission + / = date , COMPLETE_MISSION);
+
+        boolean isMisssionDone = true;
+
+        JSONArray missions = retrieveMissions();
+
+
+
+            try {
+
+                for (int i = 0; i < missions.length(); i ++) {
+
+                    JSONObject tmp = missions.getJSONObject(i);
+                    String name = tmp.getString(MISSION_QUEST_TAG);
+
+                    if (name.equals(quest)) {
+                        isMisssionDone = false;
+                    }
+
+                }
+
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            if (isMisssionDone) {
+                missionDone();
+            }
+
+
+
+    }
+
+    // Check if the mission is complete
+    private void missionDone () {
         int old = pref.getInt(KEY_COMPLETED_MISSIONS,0);
         int New = old + 1;
 
         editor.putInt(KEY_COMPLETED_MISSIONS, New);
         editor.commit();
         setRank();
-
     }
 
 

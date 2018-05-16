@@ -116,7 +116,7 @@ public class FragmentQuest  extends Fragment{
                     JSONObject json = Missionarray.getJSONObject(position);
 
                     NAME = json.getString(manager.MISSION_NAME_TAG);
-                    DESCRIPTION = json.getString(manager.MISSION_DESCRIPTION_TAG);
+                    DESCRIPTION = "Ends: " + json.getString(manager.MISSION_END_DATE_TAG);
                     SPONSOR = json.getString(manager.MISSION_SPONSOR_TAG);
                     QUEST = json.getString(manager.MISSION_QUEST_TAG);
 

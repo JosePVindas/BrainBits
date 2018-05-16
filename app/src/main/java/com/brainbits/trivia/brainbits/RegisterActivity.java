@@ -30,6 +30,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText password;
     private EditText passwordR;
 
+    private EditText address;
+
     private Spinner country;
     private Spinner state;
     private Spinner city;
@@ -53,6 +55,8 @@ public class RegisterActivity extends AppCompatActivity {
         country = (Spinner) findViewById(R.id.country_spinner);
         city = (Spinner) findViewById(R.id.city_spinner);
 
+        address = (EditText) findViewById(R.id.address);
+
 
         register = (Button) findViewById(R.id.registerBtn);
         register.setOnClickListener(new View.OnClickListener() {
@@ -74,10 +78,13 @@ public class RegisterActivity extends AppCompatActivity {
                 String ctry = "hello";
                 String state = "Hello";
                 String cty = "hello";
+                String add = address.getText().toString();
 
                 if (pswd.equals(pswdR)){
 
-                    manager.createLoginSession(nm, lnm, slnm, usr,mail,pswd,ctry, state, cty);
+                    Toast.makeText(RegisterActivity.this, add,Toast.LENGTH_LONG).show();
+
+                    manager.createLoginSession(nm, lnm, slnm, usr,mail,pswd,ctry, state, cty, add);
 
                 } else {
                     username.setText("");

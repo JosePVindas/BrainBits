@@ -40,7 +40,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -107,6 +109,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 getDeviceLocation();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm:ss");
+                String currentDateandTime = sdf.format(new Date());
+                Toast.makeText(MapsActivity.this, currentDateandTime, Toast.LENGTH_LONG).show();
+
+
             }
         });
 
@@ -216,6 +223,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void checkTask(String mission, JSONArray missions) {
 
         boolean done = false;
+        String quest = null;
 
         for (int i = 0; i < missions.length(); i++){
 
@@ -234,12 +242,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     sol.setLongitude(lng);
 
                     getDeviceLocation();
-                    float distance = getDistance(mCurrentLocation,mCurrentLocation);
+                    float distance = getDistance(sol,mCurrentLocation);
                     float tolerance = 30;
 
                     if (distance < tolerance || distance == tolerance) {
 
                         done = true;
+                        quest = tmp.getString(manager.MISSION_QUEST_TAG);
 
                     }
 
@@ -259,7 +268,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             boolean isLevelup = false;
 
             int current = manager.getRank();
-            manager.completeMission(mission);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy HH:mm:ss");
+            String currentDateandTime = sdf.format(new Date());
+            manager.completeMission(mission, quest, currentDateandTime);
             int newValue = manager.getRank();
 
             if (newValue > current) {
