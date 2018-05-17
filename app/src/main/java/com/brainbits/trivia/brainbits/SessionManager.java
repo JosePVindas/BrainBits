@@ -13,11 +13,14 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -93,6 +96,8 @@ public class SessionManager {
 
     private static final String UPDATE_RANK = "UPDATE_RANK";
     private static final String LOG = "LOG";
+
+    private String body = "";
 
 
 //    private static final String KEY_INBOX = "USER_MESSAGES";
@@ -372,79 +377,21 @@ public class SessionManager {
     // Get available missions
     public JSONArray retrieveMissions() {
 
-//        JSONObject mMissions = getFromServer(MISSIONS);
+        JSONObject mMissions = new JSONObject();
+        try {
+
+            mMissions = getFromServer(MISSIONS);
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+        }
         JSONArray missionInfo = new JSONArray();
-
-//        try {
-//
-//            missionInfo = mMissions.getJSONArray(MISSION_TAG);
-//
-//
-//        } catch (JSONException e) {
-//
-//            e.printStackTrace();
-//        }
-//
-//        return missionInfo;
-
-
-
-        double lat = 0.0;
-        double lng = 0.0;
 
         try {
 
-            JSONObject mission1 = new JSONObject();
-            mission1.put(MISSION_NAME_TAG,"Name 1");
-            mission1.put(MISSION_DESCRIPTION_TAG, "Description 1");
-            mission1.put(MISSION_QUEST_TAG, "Quest title 1");
-            mission1.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission1.put(MISSION_LATITULE_TAG,9.8774989);
-            mission1.put(MISSION_LONGITUDE_TAG,-83.9316223);
-            mission1.put(MISSION_END_DATE_TAG, "10/06/2018");
+            missionInfo = mMissions.getJSONArray(MISSION_TAG);
 
-
-            JSONObject mission2 = new JSONObject();
-            mission2.put(MISSION_NAME_TAG,"Name 2");
-            mission2.put(MISSION_DESCRIPTION_TAG, "Description 2");
-            mission2.put(MISSION_QUEST_TAG, "Quest title 2");
-            mission2.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission2.put(MISSION_LATITULE_TAG,lat);
-            mission2.put(MISSION_LONGITUDE_TAG,lng);
-            mission2.put(MISSION_END_DATE_TAG, "10/06/2018");
-
-            JSONObject mission3 = new JSONObject();
-            mission3.put(MISSION_NAME_TAG,"Name 3");
-            mission3.put(MISSION_DESCRIPTION_TAG, "Description 3");
-            mission3.put(MISSION_QUEST_TAG, "Quest title 3");
-            mission3.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission3.put(MISSION_LATITULE_TAG,lat);
-            mission3.put(MISSION_LONGITUDE_TAG,lng);
-            mission3.put(MISSION_END_DATE_TAG, "10/06/2018");
-
-            JSONObject mission4 = new JSONObject();
-            mission4.put(MISSION_NAME_TAG,"Name 4");
-            mission4.put(MISSION_DESCRIPTION_TAG, "Description 4");
-            mission4.put(MISSION_QUEST_TAG, "Quest title 4");
-            mission4.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission4.put(MISSION_LATITULE_TAG,lat);
-            mission4.put(MISSION_LONGITUDE_TAG,lng);
-            mission4.put(MISSION_END_DATE_TAG, "10/06/2018");
-
-            JSONObject mission5 = new JSONObject();
-            mission5.put(MISSION_NAME_TAG,"Name 5");
-            mission5.put(MISSION_DESCRIPTION_TAG, "Description 5");
-            mission5.put(MISSION_QUEST_TAG, "Quest title 5");
-            mission5.put(MISSION_SPONSOR_TAG, "Pepsi");
-            mission5.put(MISSION_LATITULE_TAG,lat);
-            mission5.put(MISSION_LONGITUDE_TAG,lng);
-            mission5.put(MISSION_END_DATE_TAG, "10/06/2018");
-
-            missionInfo.put(mission1);
-            missionInfo.put(mission2);
-            missionInfo.put(mission3);
-            missionInfo.put(mission4);
-            missionInfo.put(mission5);
 
         } catch (JSONException e) {
 
@@ -452,6 +399,72 @@ public class SessionManager {
         }
 
         return missionInfo;
+
+
+
+//        double lat = 0.0;
+//        double lng = 0.0;
+//
+//        try {
+//
+//            JSONObject mission1 = new JSONObject();
+//            mission1.put(MISSION_NAME_TAG,"Name 1");
+//            mission1.put(MISSION_DESCRIPTION_TAG, "Description 1");
+//            mission1.put(MISSION_QUEST_TAG, "Quest title 1");
+//            mission1.put(MISSION_SPONSOR_TAG, "Pepsi");
+//            mission1.put(MISSION_LATITULE_TAG,9.8774989);
+//            mission1.put(MISSION_LONGITUDE_TAG,-83.9316223);
+//            mission1.put(MISSION_END_DATE_TAG, "10/06/2018");
+//
+//
+//            JSONObject mission2 = new JSONObject();
+//            mission2.put(MISSION_NAME_TAG,"Name 2");
+//            mission2.put(MISSION_DESCRIPTION_TAG, "Description 2");
+//            mission2.put(MISSION_QUEST_TAG, "Quest title 2");
+//            mission2.put(MISSION_SPONSOR_TAG, "Pepsi");
+//            mission2.put(MISSION_LATITULE_TAG,lat);
+//            mission2.put(MISSION_LONGITUDE_TAG,lng);
+//            mission2.put(MISSION_END_DATE_TAG, "10/06/2018");
+//
+//            JSONObject mission3 = new JSONObject();
+//            mission3.put(MISSION_NAME_TAG,"Name 3");
+//            mission3.put(MISSION_DESCRIPTION_TAG, "Description 3");
+//            mission3.put(MISSION_QUEST_TAG, "Quest title 3");
+//            mission3.put(MISSION_SPONSOR_TAG, "Pepsi");
+//            mission3.put(MISSION_LATITULE_TAG,lat);
+//            mission3.put(MISSION_LONGITUDE_TAG,lng);
+//            mission3.put(MISSION_END_DATE_TAG, "10/06/2018");
+//
+//            JSONObject mission4 = new JSONObject();
+//            mission4.put(MISSION_NAME_TAG,"Name 4");
+//            mission4.put(MISSION_DESCRIPTION_TAG, "Description 4");
+//            mission4.put(MISSION_QUEST_TAG, "Quest title 4");
+//            mission4.put(MISSION_SPONSOR_TAG, "Pepsi");
+//            mission4.put(MISSION_LATITULE_TAG,lat);
+//            mission4.put(MISSION_LONGITUDE_TAG,lng);
+//            mission4.put(MISSION_END_DATE_TAG, "10/06/2018");
+//
+//            JSONObject mission5 = new JSONObject();
+//            mission5.put(MISSION_NAME_TAG,"Name 5");
+//            mission5.put(MISSION_DESCRIPTION_TAG, "Description 5");
+//            mission5.put(MISSION_QUEST_TAG, "Quest title 5");
+//            mission5.put(MISSION_SPONSOR_TAG, "Pepsi");
+//            mission5.put(MISSION_LATITULE_TAG,lat);
+//            mission5.put(MISSION_LONGITUDE_TAG,lng);
+//            mission5.put(MISSION_END_DATE_TAG, "10/06/2018");
+//
+//            missionInfo.put(mission1);
+//            missionInfo.put(mission2);
+//            missionInfo.put(mission3);
+//            missionInfo.put(mission4);
+//            missionInfo.put(mission5);
+//
+//        } catch (JSONException e) {
+//
+//            e.printStackTrace();
+//        }
+//
+//        return missionInfo;
 
 
 
@@ -467,41 +480,48 @@ public class SessionManager {
     }
 
     // Get information from server
-    private JSONObject getFromServer (String request) {
+    public JSONObject getFromServer (String request) throws InterruptedException {
 
         // Url of the server with which the connection will be established.
         URL url = null;
         String outputString = null;
-        JSONObject data = null;
+        JSONObject data = new JSONObject();
         String username = pref.getString(KEY_USERNAME, null);
 
+        //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
+                    URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/MISSIONS");
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    String codigoRespuesta = Integer.toString(urlConnection.getResponseCode());
+                    if(codigoRespuesta.equals("200"))
+                    {
+                        body=readStream(urlConnection.getInputStream());
+                    }
+                    urlConnection.disconnect();
+                    System.out.println(codigoRespuesta);
+                    System.out.println(body);
+                }catch (MalformedURLException e){
+                    body = e.toString();
+                    System.out.println("fallo 1");
+                }catch (SocketTimeoutException e){
+                    body = e.toString();
+                    System.out.println("fallo 2");
+                }catch (Exception e){
+                    body = e.toString();
+                    System.out.println("fallo 3");
+                }
+            }
+        });
+        thread.start();
+        Thread.sleep(200);
         try {
 
-            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
-
-
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        }
-        try {
-
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();//incializa el cliente http
-
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());//instrucción para hacer el GET
-            urlConnection.disconnect();//siempre se tiene que cerrar la conexion despues de usarse
-
-            outputString = in.toString();
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
-
-        try {
-
-            data = new JSONObject(outputString);
+            data = new JSONObject(body);
 
         } catch (Throwable t) {
 
@@ -511,6 +531,23 @@ public class SessionManager {
 
         return data;
 
+    }
+
+    // Read the input stream
+    private String readStream(InputStream in) throws IOException{
+        BufferedReader r = null;
+        r = new BufferedReader(new InputStreamReader(in));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while((line = r.readLine()) != null){
+            total.append(line);
+
+        }
+        if(r != null ){
+            r.close();
+        }
+        in.close();
+        return total.toString();
     }
 
     // send JSON to the server
