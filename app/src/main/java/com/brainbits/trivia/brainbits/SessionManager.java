@@ -73,6 +73,8 @@ public class SessionManager {
     public static final String CLUE_LIST = "CLUE_LIST";
     public static final String MISSION_CLUE_TAG = "CLUE";
 
+    public static final String INFO_OK = "INFO_OK";
+
     public static final String LOG_TAG = "LOG_TAG";
 
     public static final String MISSION_END_DATE_TAG = "MISSION_END_DATE";
@@ -129,7 +131,6 @@ public class SessionManager {
             String address) {
 
         // validate information before storing in Shared Preferences
-        if (isUserInfoOk(username,email)){
 
             // Store all data in Shared Preferences
             editor.putBoolean(IS_LOGIN, true);
@@ -143,30 +144,41 @@ public class SessionManager {
 
             createUserAccount(name, lastName, sLastName, username,email,password,country, state, city, address,0);
 
-            final Intent i = new Intent(_context ,MapsActivity.class);
-            _context.startActivity(i);
 
-
-        } else {
-
-            Toast.makeText(this._context,"Username or password already taken",Toast.LENGTH_LONG).show();
-
-        }
 
     }
 
     // login the user to access the application
     public void loginUser (String username, String password) {
 
-        if (isUserInfoOk(username,password,0)) {
+        JSONObject json = new JSONObject();
+        try {
 
-            openSession(username,password);
-            final Intent i = new Intent(_context,MapsActivity.class);
-            _context.startActivity(i);
+            json.put(USERNAME_TAG,username);
+            json.put(PASSWORD_TAG,password);
 
-        } else {
-            Toast.makeText(_context,"Username or Password incorrect",Toast.LENGTH_LONG).show();
+            JSONObject tmp = getFromServer(USER_INFO,json);
+            Boolean isValid = tmp.getBoolean(INFO_OK);
+
+            if (isValid) {
+
+                openSession(username,password);
+                final Intent i = new Intent(_context,MapsActivity.class);
+                _context.startActivity(i);
+
+            } else {
+
+                Toast.makeText(_context, "Username or password are incorrect", Toast.LENGTH_LONG).show();
+
+            }
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
         }
+
     }
 
     // clear all the data from shared preferences
@@ -237,35 +249,42 @@ public class SessionManager {
 
             user.put(RANK_TAG, rank);
 
-//            sendToServer(user);
+
 
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-//        sendToServer(user,CREATE_USER);
+        try {
 
-    }
+           JSONObject validate = getFromServer(CREATE_USER,user);
+           Boolean isValid = validate.getBoolean(INFO_OK);
 
-    // Validate username or email against password
-    private boolean isUserInfoOk (String username, String password, int diferentiator) {
+           if (isValid) {
 
-        //boolean tmp = false; // it will be false by default but true for testing purposes
-        boolean tmp = true;
-        // Validate username or email against password on the database
+               final Intent i = new Intent(_context ,MapsActivity.class);
+               _context.startActivity(i);
 
-        return tmp;
-    }
+           } else {
 
-    // Validate username and email with database to make sure they're available
-    private boolean isUserInfoOk (String username, String email) {
+               Toast.makeText(_context,"Username or email already in use",Toast.LENGTH_LONG).show();
+               logoutUser();
 
-        //boolean tmp = false; // it will be false by default but true for testing purposes
-        boolean tmp = true;
+           }
 
 
-        return tmp;
+
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        }
+
     }
 
     // Login user and get all data from database
@@ -380,6 +399,7 @@ public class SessionManager {
         JSONObject mMissions = new JSONObject();
         try {
 
+
             mMissions = getFromServer(MISSIONS);
 
         } catch (InterruptedException e) {
@@ -400,74 +420,6 @@ public class SessionManager {
 
         return missionInfo;
 
-
-
-//        double lat = 0.0;
-//        double lng = 0.0;
-//
-//        try {
-//
-//            JSONObject mission1 = new JSONObject();
-//            mission1.put(MISSION_NAME_TAG,"Name 1");
-//            mission1.put(MISSION_DESCRIPTION_TAG, "Description 1");
-//            mission1.put(MISSION_QUEST_TAG, "Quest title 1");
-//            mission1.put(MISSION_SPONSOR_TAG, "Pepsi");
-//            mission1.put(MISSION_LATITULE_TAG,9.8774989);
-//            mission1.put(MISSION_LONGITUDE_TAG,-83.9316223);
-//            mission1.put(MISSION_END_DATE_TAG, "10/06/2018");
-//
-//
-//            JSONObject mission2 = new JSONObject();
-//            mission2.put(MISSION_NAME_TAG,"Name 2");
-//            mission2.put(MISSION_DESCRIPTION_TAG, "Description 2");
-//            mission2.put(MISSION_QUEST_TAG, "Quest title 2");
-//            mission2.put(MISSION_SPONSOR_TAG, "Pepsi");
-//            mission2.put(MISSION_LATITULE_TAG,lat);
-//            mission2.put(MISSION_LONGITUDE_TAG,lng);
-//            mission2.put(MISSION_END_DATE_TAG, "10/06/2018");
-//
-//            JSONObject mission3 = new JSONObject();
-//            mission3.put(MISSION_NAME_TAG,"Name 3");
-//            mission3.put(MISSION_DESCRIPTION_TAG, "Description 3");
-//            mission3.put(MISSION_QUEST_TAG, "Quest title 3");
-//            mission3.put(MISSION_SPONSOR_TAG, "Pepsi");
-//            mission3.put(MISSION_LATITULE_TAG,lat);
-//            mission3.put(MISSION_LONGITUDE_TAG,lng);
-//            mission3.put(MISSION_END_DATE_TAG, "10/06/2018");
-//
-//            JSONObject mission4 = new JSONObject();
-//            mission4.put(MISSION_NAME_TAG,"Name 4");
-//            mission4.put(MISSION_DESCRIPTION_TAG, "Description 4");
-//            mission4.put(MISSION_QUEST_TAG, "Quest title 4");
-//            mission4.put(MISSION_SPONSOR_TAG, "Pepsi");
-//            mission4.put(MISSION_LATITULE_TAG,lat);
-//            mission4.put(MISSION_LONGITUDE_TAG,lng);
-//            mission4.put(MISSION_END_DATE_TAG, "10/06/2018");
-//
-//            JSONObject mission5 = new JSONObject();
-//            mission5.put(MISSION_NAME_TAG,"Name 5");
-//            mission5.put(MISSION_DESCRIPTION_TAG, "Description 5");
-//            mission5.put(MISSION_QUEST_TAG, "Quest title 5");
-//            mission5.put(MISSION_SPONSOR_TAG, "Pepsi");
-//            mission5.put(MISSION_LATITULE_TAG,lat);
-//            mission5.put(MISSION_LONGITUDE_TAG,lng);
-//            mission5.put(MISSION_END_DATE_TAG, "10/06/2018");
-//
-//            missionInfo.put(mission1);
-//            missionInfo.put(mission2);
-//            missionInfo.put(mission3);
-//            missionInfo.put(mission4);
-//            missionInfo.put(mission5);
-//
-//        } catch (JSONException e) {
-//
-//            e.printStackTrace();
-//        }
-//
-//        return missionInfo;
-
-
-
     }
 
     public ArrayList<String> getMissions() {
@@ -476,6 +428,62 @@ public class SessionManager {
                 Arrays.asList("Mission 10", "Mission 11", "Mission 12",
                         "Mission 13", "Mission 14", "Mission 15"));
         return names;
+
+    }
+
+    // Get information from server
+    private JSONObject getFromServer (final String request, JSONObject json) throws InterruptedException {
+
+        // Url of the server with which the connection will be established.
+        JSONObject data = new JSONObject();
+        final String username = pref.getString(KEY_USERNAME, null);
+        final String jsonString = json.toString();
+
+        //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
+                    URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/" + request + "/"
+                            + username + "/"  + jsonString);
+                    //URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/MISSIONS");
+
+                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    String codigoRespuesta = Integer.toString(urlConnection.getResponseCode());
+                    if(codigoRespuesta.equals("200"))
+                    {
+                        body=readStream(urlConnection.getInputStream());
+                    }
+                    urlConnection.disconnect();
+                    System.out.println(codigoRespuesta);
+                    System.out.println(body);
+                }catch (MalformedURLException e){
+                    body = e.toString();
+                    System.out.println("fallo 1");
+                }catch (SocketTimeoutException e){
+                    body = e.toString();
+                    System.out.println("fallo 2");
+                }catch (Exception e){
+                    body = e.toString();
+                    System.out.println("fallo 3");
+                }
+            }
+        });
+        thread.start();
+        Thread.sleep(200);
+        try {
+
+            data = new JSONObject(body);
+
+        } catch (Throwable t) {
+
+            t.printStackTrace();
+
+        }
+
+        return data;
 
     }
 
@@ -548,100 +556,6 @@ public class SessionManager {
         }
         in.close();
         return total.toString();
-    }
-
-    // send JSON to the server
-    private void sendToServer (JSONObject json, String request) {
-
-        // Obtener la conexión
-        HttpURLConnection con = null;
-        URL url = null;
-        String username = pref.getString(KEY_USERNAME, null);
-
-        try {
-
-            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/POST/" +username + "/" + request);
-
-
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        }
-
-
-        try {
-            // Convert Json to String
-            String data = json.toString();
-
-            con = (HttpURLConnection)url.openConnection();
-
-            // Set up post
-            con.setDoOutput(true);
-
-            // Get string size
-            con.setFixedLengthStreamingMode(data.getBytes().length);
-
-            // Set up data
-            OutputStream out = new BufferedOutputStream(con.getOutputStream());
-
-            // Send data
-            out.write(data.getBytes());
-            out.flush();
-            out.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(con!=null)
-                con.disconnect();
-        }
-
-    }
-
-    // send JSON to the server
-    private void sendToServer (String data, String request) {
-
-        // Obtener la conexión
-        HttpURLConnection con = null;
-        URL url = null;
-        String username = pref.getString(KEY_USERNAME, null);
-
-        try {
-
-            url = new URL("http://192.168.1.7:9080/RESTful_API/REST/POST/" +username + "/" + request);
-
-
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-        }
-
-
-        try {
-
-            con = (HttpURLConnection)url.openConnection();
-
-            // Set up post
-            con.setDoOutput(true);
-
-            // Get string size
-            con.setFixedLengthStreamingMode(data.getBytes().length);
-
-            // Set up data
-            OutputStream out = new BufferedOutputStream(con.getOutputStream());
-
-            // Send data
-            out.write(data.getBytes());
-            out.flush();
-            out.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(con!=null)
-                con.disconnect();
-        }
-
     }
 
     // request to abort the mission
