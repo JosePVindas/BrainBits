@@ -386,6 +386,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    // checks to see if the mission answer is correct.
     private void checkMission () {
 
         MissionListDialog.setContentView(R.layout.dialog_mission_list);

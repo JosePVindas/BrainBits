@@ -72,7 +72,26 @@ public class FragmentQuest  extends Fragment{
           }
 
 
-        final ArrayList<String> pMissions = manager.getMissions();
+        final ArrayList<String> pMissions = new ArrayList<>();
+
+
+          JSONObject AvMiss = manager.getMissions();
+        JSONArray miss = null;
+
+        try {
+
+
+            miss = AvMiss.getJSONArray(manager.MISSION_COMPLETED);
+
+            for (int i = 0; i < AvMiss.length(); i++) {
+
+                JSONObject tmpmiss;
+                tmpmiss = miss.getJSONObject(i);
+                pMissions.add(tmpmiss.getString(manager.MISSION_NAME_TAG));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // List Views from the Layout File
         final ListView cMissions = (ListView)view.findViewById(R.id.current_missions);
@@ -96,12 +115,11 @@ public class FragmentQuest  extends Fragment{
 
                 // TextViews
                 TextView title = (TextView) missionInfo.findViewById(R.id.dialog_mission_title);
-                TextView sponsor = (TextView) missionInfo.findViewById(R.id.dialog_mission_sponsor);
                 TextView description = (TextView) missionInfo.findViewById(R.id.dialog_mission_description);
                 TextView quest = (TextView) missionInfo.findViewById(R.id.dialog_mission_parent);
 
                 // ImageView
-                ImageView sponsorImg = (ImageView) missionInfo.findViewById(R.id.dialog_mission_sponsor_img);
+
 
                 String NAME = null;
                 String DESCRIPTION = null;
@@ -128,16 +146,7 @@ public class FragmentQuest  extends Fragment{
 
                 title.setText(NAME);
                 description.setText(DESCRIPTION);
-                sponsor.setText(SPONSOR);
                 quest.setText(QUEST);
-
-                if (SPONSOR.equals("Pepsi")) {
-                    sponsorImg.setImageResource(R.mipmap.sponsor_pepsi);
-                } else {
-                    sponsorImg.setImageResource(R.drawable.rank_sergeant_command_major);
-                }
-
-
 
                 // Buttons
                 Button ok = (Button) missionInfo.findViewById(R.id.dialog_mission_ok);
@@ -157,9 +166,6 @@ public class FragmentQuest  extends Fragment{
 
                         abortMission(finalQUEST);
 
-                        mMissions.remove(position);
-                        adapter.notifyDataSetChanged();
-                        missionInfo.dismiss();
                     }
                 });
 
@@ -171,6 +177,7 @@ public class FragmentQuest  extends Fragment{
         });
 
         // Adding a listener to evaluate clicks on each item
+        final JSONArray finalMiss = miss;
         avMissions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -189,9 +196,44 @@ public class FragmentQuest  extends Fragment{
                 TextView sponsor = (TextView) missionInfoav.findViewById(R.id.dialog_missionav_sponsor);
                 TextView description = (TextView) missionInfoav.findViewById(R.id.dialog_missionav_description);
 
+                String SPONSOR = null;
+                String DESCRIPTION = null;
+
+                try {
+
+                    JSONObject tmp = finalMiss.getJSONObject(position);
+                    SPONSOR = tmp.getString(manager.MISSION_NAME_TAG);
+                    DESCRIPTION = tmp.getString(manager.MISSION_DESCRIPTION_TAG);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                sponsor.setText(SPONSOR);
+                description.setText(DESCRIPTION);
+
 
                 // ImageView
                 ImageView sponsorImg = (ImageView) missionInfoav.findViewById(R.id.dialog_missionav_sponsor_img);
+
+                if (SPONSOR.equals("Banco Nacional")) {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_banco);
+                }
+
+                if (SPONSOR.equals("Almacen Jerusalem")) {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_jerusalem);
+                }
+
+                if (SPONSOR.equals("Jazz Cafe Club")) {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_jazz);
+                }
+
+                if (SPONSOR.equals("Dein Buster-Die Familienvideothek An und Verkauf")) {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_buster);
+                }
+
+                else {
+                    sponsorImg.setImageResource(R.mipmap.sponsor_pepsi);
+                }
 
                 // Buttons
                 Button ok = (Button) missionInfoav.findViewById(R.id.dialog_missionav_ok);
@@ -227,12 +269,14 @@ public class FragmentQuest  extends Fragment{
         return view;
     }
 
+    // notifies the server that the user wishes to join a mission.
     private void joinMission (String mission){
 
         SessionManager manager = new SessionManager(getActivity());
         manager.joinMission(mission);
     }
 
+    // notifies the server that the user wishes to abort a mission.
     private void abortMission (String mission){
 
         // Getting the username for it's use in the database

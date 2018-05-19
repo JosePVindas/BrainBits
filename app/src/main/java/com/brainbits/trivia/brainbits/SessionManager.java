@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -42,6 +44,8 @@ public class SessionManager {
     private static final String KEY_USERNAME = "USERNAME";
     private static final String KEY_PASSWORD = "USER_PASSWORD";
     private static final String KEY_EMAIL = "USER_EMAIL";
+    private static final String KEY_COUNTRY_ID = "COUNTRY_ID";
+    private static final String KEY_CITY_ID = "CITY_ID";
 
     // Shared Preferences Keys for gameplay
     private static final String KEY_RANK = "USER_RANK";
@@ -56,10 +60,15 @@ public class SessionManager {
     private static final String EMAIL_TAG = "EMAIL";
     private static final String PASSWORD_TAG = "PASSWORD";
 
-    private static final String COUNTRY_TAG = "COUNTRY";
-    private static final String STATE_TAG = "STATE";
-    private static final String CITY_TAG = "CITY";
-    private static final String ADDRESS_TAG = "ADDRESS";
+    public static final String COUNTRY_TAG = "COUNTRY";
+    public static final String STATE_TAG = "STATE";
+    public static final String CITY_TAG = "CITY";
+    public static final String ADDRESS_TAG = "ADDRESS";
+
+    public static final String COUNTRY_ID = "COUNTRY_ID";
+    public static final String STATE_ID = "STATE_ID";
+    public static final String CITY_ID = "CITY_ID";
+    public static final String ADDRESS_ID = "ADDRESS_ID";
 
     private static final String RANK_TAG = "RANK";
 
@@ -83,8 +92,6 @@ public class SessionManager {
     public static final String MISSION_COMPLETED = "MISSION_COMPLETED";
 
 
-
-
     // Server Request tags
     private static final String USER_INFO = "USER_INFO";
     private static final String MISSIONS = "MISSIONS";
@@ -97,6 +104,13 @@ public class SessionManager {
     private static final String COMPLETED_MISSIONS = "COMPLETED_MISSIONS";
 
     private static final String UPDATE_RANK = "UPDATE_RANK";
+
+    private static final String CITY_REQUEST = "CITY";
+    private static final String STATE_REQUEST = "STATE";
+    private static final String COUNTRY_REQUEST = "COUNTRY";
+
+    private static final String AVMISSION_REQUEST = "CONCURSOS";
+
     private static final String LOG = "LOG";
 
     private String body = "";
@@ -105,7 +119,6 @@ public class SessionManager {
 //    private static final String KEY_INBOX = "USER_MESSAGES";
 //    private static final String KEY_MISSIONS = "USER_MISSIONS";
 //    private static final String KEY_NEW_MISSIONS = "USER_AVAILABLE_MISSIONS";
-
 
 
     // CONSTRUCTOR
@@ -119,51 +132,65 @@ public class SessionManager {
     }
 
 
-
     // SHARED PREFERENCES METHODS
 
 
-
     // Create a login session where all the important information about the user is stored
-    public void createLoginSession (
+    public void createLoginSession(
             String name, String lastName, String sLastName, String username,
             String email, String password, String country, String state, String city,
             String address) {
 
         // validate information before storing in Shared Preferences
 
-            // Store all data in Shared Preferences
-            editor.putBoolean(IS_LOGIN, true);
+        // Store all data in Shared Preferences
+        editor.putBoolean(IS_LOGIN, true);
 
-            editor.putString(KEY_USERNAME, username);
-            editor.putString(KEY_EMAIL, email);
-            editor.putString(KEY_PASSWORD, password);
-            editor.putInt(KEY_RANK, 0);
-            editor.putInt(KEY_COMPLETED_MISSIONS, 0);
-            editor.commit();
+        editor.putString(KEY_USERNAME, username);
+        editor.putString(KEY_EMAIL, email);
+        editor.putString(KEY_PASSWORD, password);
+        editor.putInt(KEY_RANK, 0);
+        editor.putInt(KEY_COMPLETED_MISSIONS, 0);
+        editor.commit();
 
-            createUserAccount(name, lastName, sLastName, username,email,password,country, state, city, address,0);
-
+        createUserAccount(name, lastName, sLastName, username, email, password, country, state, city, address, 0);
 
 
     }
 
     // login the user to access the application
-    public void loginUser (String username, String password) {
+    public void loginUser(String username, String password) {
+
+        String email = new String();
+        int rank = 0;
+        int completed_missions = 0;
+
 
         JSONObject json = new JSONObject();
         try {
 
-            json.put(USERNAME_TAG,username);
-            json.put(PASSWORD_TAG,password);
+            json.put(USERNAME_TAG, username);
+            json.put(PASSWORD_TAG, password);
 
-            JSONObject tmp = getFromServer(USER_INFO,json);
+            JSONObject tmp = getFromServer(USER_INFO, json);
             Boolean isValid = tmp.getBoolean(INFO_OK);
 
             if (isValid) {
 
-                openSession(username,password);
-                final Intent i = new Intent(_context,MapsActivity.class);
+                rank = tmp.getInt(RANK_TAG);
+                email = tmp.getString(EMAIL_TAG);
+                completed_missions = tmp.getInt(MISSION_COMPLETED);
+
+                editor.putBoolean(IS_LOGIN, true);
+
+                editor.putString(KEY_USERNAME, username);
+                editor.putString(KEY_PASSWORD, password);
+                editor.putString(KEY_EMAIL, email);
+                editor.putInt(KEY_RANK, rank);
+                editor.putInt(KEY_COMPLETED_MISSIONS, completed_missions);
+                editor.commit();
+
+                final Intent i = new Intent(_context, MapsActivity.class);
                 _context.startActivity(i);
 
             } else {
@@ -181,6 +208,21 @@ public class SessionManager {
 
     }
 
+    // stores the id of the user country for future ussage
+    public void setCountryID(String countryID) {
+
+        editor.putString(KEY_COUNTRY_ID, countryID);
+        editor.commit();
+    }
+
+    // stores the id of the user city for future usage
+    public void setCityID(String cityID) {
+
+        editor.putString(KEY_CITY_ID, cityID);
+        editor.commit();
+
+    }
+
     // clear all the data from shared preferences
     public void logoutUser() {
 
@@ -194,7 +236,7 @@ public class SessionManager {
     }
 
     // get the username from shared preferences
-    public String getUsername () {
+    public String getUsername() {
 
         String username = pref.getString(KEY_USERNAME, null);
         return username;
@@ -202,7 +244,7 @@ public class SessionManager {
     }
 
     // get the email from shared preferences
-    public String getEmail () {
+    public String getEmail() {
 
         String email = pref.getString(KEY_EMAIL, null);
         return email;
@@ -216,14 +258,11 @@ public class SessionManager {
     }
 
 
-
-
     // SERVER METHODS
 
 
-
     // Save user details in shared preferences and data base
-    private void createUserAccount (
+    private void createUserAccount(
             String name, String lastName, String sLastName, String username,
             String email, String password, String country, String state, String city,
             String address, int rank) {
@@ -245,11 +284,9 @@ public class SessionManager {
             user.put(STATE_TAG, state);
             user.put(CITY_TAG, city);
 
-            user.put(ADDRESS_TAG,address);
+            user.put(ADDRESS_TAG, address);
 
             user.put(RANK_TAG, rank);
-
-
 
 
         } catch (JSONException e) {
@@ -258,22 +295,20 @@ public class SessionManager {
 
         try {
 
-           JSONObject validate = getFromServer(CREATE_USER,user);
-           Boolean isValid = validate.getBoolean(INFO_OK);
+            JSONObject validate = getFromServer(CREATE_USER, user);
+            Boolean isValid = validate.getBoolean(INFO_OK);
 
-           if (isValid) {
+            if (isValid) {
 
-               final Intent i = new Intent(_context ,MapsActivity.class);
-               _context.startActivity(i);
+                final Intent i = new Intent(_context, MapsActivity.class);
+                _context.startActivity(i);
 
-           } else {
+            } else {
 
-               Toast.makeText(_context,"Username or email already in use",Toast.LENGTH_LONG).show();
-               logoutUser();
+                Toast.makeText(_context, "Username or email already in use", Toast.LENGTH_LONG).show();
+                logoutUser();
 
-           }
-
-
+            }
 
 
         } catch (InterruptedException e) {
@@ -287,33 +322,85 @@ public class SessionManager {
 
     }
 
+
+    // returns all the countries where the game is available for play.
+    public JSONObject getCountries() {
+
+        JSONObject tmp = new JSONObject();
+
+        try {
+
+            tmp = getFromServer(COUNTRY_REQUEST);
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+        return tmp;
+    }
+
+    // returs all the states pertinent to the id of the country given
+    public JSONObject getStates(int id) {
+
+        JSONObject ids = new JSONObject();
+
+        try {
+            ids.put(COUNTRY_ID, id);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JSONObject tmp = new JSONObject();
+
+        try {
+
+            tmp = getFromServer(STATE_REQUEST, ids);
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+        return tmp;
+    }
+
+    // returns all the cities pertinent to the id of the state given
+    public JSONObject getCities(int id) {
+
+        JSONObject ids = new JSONObject();
+
+        try {
+            ids.put(STATE_ID, id);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JSONObject tmp = new JSONObject();
+
+        try {
+
+            tmp = getFromServer(CITY_REQUEST, ids);
+
+        } catch (InterruptedException e) {
+
+            e.printStackTrace();
+
+        }
+
+        return tmp;
+    }
+
     // Login user and get all data from database
     private void openSession(String username, String password) {
 
-        String email = new String();
-        int rank = 0;
-        int completed_missions = 0;
 
-//        JSONObject json = getFromServer(USER_INFO);
-//            try {
-//
-//                rank = json.getInt(RANK_TAG);
-//                email = json.getString(EMAIL_TAG);
-//                completed_missions = json.getInt(MISSION_COMPLETED);
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-
-        editor.putBoolean(IS_LOGIN, true);
-
-        editor.putString(KEY_USERNAME, username);
-        editor.putString(KEY_PASSWORD, password);
-        editor.putString(KEY_EMAIL, email);
-        editor.putInt(KEY_RANK,rank);
-        editor.putInt(KEY_COMPLETED_MISSIONS,completed_missions);
-
-        editor.commit();
     }
 
     // update user rank in data base
@@ -336,9 +423,9 @@ public class SessionManager {
     }
 
     //set rank
-    public void setRank () {
+    public void setRank() {
 
-        int completed_missions = pref.getInt(KEY_COMPLETED_MISSIONS,0);
+        int completed_missions = pref.getInt(KEY_COMPLETED_MISSIONS, 0);
 
         if (completed_missions >= 20 && completed_missions < 30) {
 
@@ -353,7 +440,7 @@ public class SessionManager {
         if (completed_missions >= 10 && completed_missions < 15) {
 
         }
-            updateRank(4);
+        updateRank(4);
 
         if (completed_missions >= 5 && completed_missions < 10) {
 
@@ -422,21 +509,30 @@ public class SessionManager {
 
     }
 
-    public ArrayList<String> getMissions() {
+    public JSONObject getMissions() {
 
-        ArrayList<String> names = new ArrayList<String>(
-                Arrays.asList("Mission 10", "Mission 11", "Mission 12",
-                        "Mission 13", "Mission 14", "Mission 15"));
-        return names;
+        JSONObject avMIssions = null;
+        try {
+
+            JSONObject tmp = new JSONObject();
+            tmp.put("bla", "bla");
+            avMIssions = getFromServer(AVMISSION_REQUEST, tmp);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return avMIssions;
 
     }
-
+    
     // Get information from server
-    private JSONObject getFromServer (final String request, JSONObject json) throws InterruptedException {
+    private JSONObject getFromServer(final String request, JSONObject json) throws InterruptedException {
 
         // Url of the server with which the connection will be established.
         JSONObject data = new JSONObject();
-        final String username = pref.getString(KEY_USERNAME, null);
+        final String username = pref.getString(KEY_USERNAME, "none");
         final String jsonString = json.toString();
 
         //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
@@ -444,28 +540,29 @@ public class SessionManager {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
-                    //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
-                    URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/" + request + "/"
-                            + username + "/"  + jsonString);
+
+                try {
+
+                    URL url = new URL("http://192.168.43.200:5555/RESTful_API/REST/GET/" + request + "/"
+                            + username + "/" + jsonString);
+
                     //URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/MISSIONS");
 
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     String codigoRespuesta = Integer.toString(urlConnection.getResponseCode());
-                    if(codigoRespuesta.equals("200"))
-                    {
-                        body=readStream(urlConnection.getInputStream());
+                    if (codigoRespuesta.equals("200")) {
+                        body = readStream(urlConnection.getInputStream());
                     }
                     urlConnection.disconnect();
                     System.out.println(codigoRespuesta);
                     System.out.println(body);
-                }catch (MalformedURLException e){
+                } catch (MalformedURLException e) {
                     body = e.toString();
                     System.out.println("fallo 1");
-                }catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException e) {
                     body = e.toString();
                     System.out.println("fallo 2");
-                }catch (Exception e){
+                } catch (Exception e) {
                     body = e.toString();
                     System.out.println("fallo 3");
                 }
@@ -488,7 +585,7 @@ public class SessionManager {
     }
 
     // Get information from server
-    public JSONObject getFromServer (String request) throws InterruptedException {
+    public JSONObject getFromServer(final String request) throws InterruptedException {
 
         // Url of the server with which the connection will be established.
         URL url = null;
@@ -501,25 +598,24 @@ public class SessionManager {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
+                try {
                     //url = new URL("http://192.168.1.7:9080/RESTful_API/REST/GET/" +username + "/" + request);
-                    URL url = new URL("http://192.168.43.200:9080/RESTful_API/REST/GET/MISSIONS");
-                    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+                    URL url = new URL("http://192.168.43.200:5555/RESTful_API/REST/GET/" + request);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     String codigoRespuesta = Integer.toString(urlConnection.getResponseCode());
-                    if(codigoRespuesta.equals("200"))
-                    {
-                        body=readStream(urlConnection.getInputStream());
+                    if (codigoRespuesta.equals("200")) {
+                        body = readStream(urlConnection.getInputStream());
                     }
                     urlConnection.disconnect();
                     System.out.println(codigoRespuesta);
                     System.out.println(body);
-                }catch (MalformedURLException e){
+                } catch (MalformedURLException e) {
                     body = e.toString();
                     System.out.println("fallo 1");
-                }catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException e) {
                     body = e.toString();
                     System.out.println("fallo 2");
-                }catch (Exception e){
+                } catch (Exception e) {
                     body = e.toString();
                     System.out.println("fallo 3");
                 }
@@ -542,16 +638,16 @@ public class SessionManager {
     }
 
     // Read the input stream
-    private String readStream(InputStream in) throws IOException{
+    private String readStream(InputStream in) throws IOException {
         BufferedReader r = null;
         r = new BufferedReader(new InputStreamReader(in));
         StringBuilder total = new StringBuilder();
         String line;
-        while((line = r.readLine()) != null){
+        while ((line = r.readLine()) != null) {
             total.append(line);
 
         }
-        if(r != null ){
+        if (r != null) {
             r.close();
         }
         in.close();
@@ -559,59 +655,51 @@ public class SessionManager {
     }
 
     // request to abort the mission
-    public void abortMission (String mission) {
+    public void abortMission(String mission) {
 
 //        sendToServer(mission, ABORT_MISSION);
 
     }
 
     // Request to join a mission
-    public void joinMission (String mission) {
+    public void joinMission(String mission) {
 
 //        sendToServer(mission, JOIN_MISSION);
 
     }
 
     // Notify server of completed mission
-    public void completeMission (String mission, String quest, String date) {
-
-//        sendToServer(mission + / = date , COMPLETE_MISSION);
-
+    public void completeMission(String mission, String quest, String date) {
         boolean isMisssionDone = true;
-
         JSONArray missions = retrieveMissions();
 
+        try {
+            for (int i = 0; i < missions.length(); i++) {
 
+                JSONObject tmp = missions.getJSONObject(i);
+                String name = tmp.getString(MISSION_QUEST_TAG);
 
-            try {
-
-                for (int i = 0; i < missions.length(); i ++) {
-
-                    JSONObject tmp = missions.getJSONObject(i);
-                    String name = tmp.getString(MISSION_QUEST_TAG);
-
-                    if (name.equals(quest)) {
-                        isMisssionDone = false;
-                    }
-
+                if (name.equals(quest)) {
+                    isMisssionDone = false;
                 }
 
-            } catch (JSONException e) {
-
-                e.printStackTrace();
             }
 
-            if (isMisssionDone) {
-                missionDone();
-            }
+        } catch (JSONException e) {
 
+            e.printStackTrace();
+        }
+
+        if (isMisssionDone) {
+            missionDone();
+        }
 
 
     }
 
     // Check if the mission is complete
-    private void missionDone () {
-        int old = pref.getInt(KEY_COMPLETED_MISSIONS,0);
+    private void missionDone() {
+        int old = pref.getInt(KEY_COMPLETED_MISSIONS, 0);
         int New = old + 1;
 
         editor.putInt(KEY_COMPLETED_MISSIONS, New);
@@ -620,59 +708,42 @@ public class SessionManager {
     }
 
 
-
     // INBOX REFRESH METHODS
 
 
-
     // Asks data base for new messages
-    public JSONObject getMessages () {
-
-//        JSONObject messages = getFromServer(CLUE_LIST);
-
+    public JSONObject getMessages() {
         JSONObject missions = new JSONObject();
         JSONObject tmp = new JSONObject();
         JSONArray array = new JSONArray();
-
         ArrayList<String> clues = new ArrayList<>(Arrays.asList("Clue 1", "Clue 2", "Clue 3", "Clue 4"));
 
 
-
-            try {
-
-                for (int i = 0; i < 34; i++) {
-
-                    tmp.put(MISSION_NAME_TAG, "Mission " + i);
-                    tmp.put(MISSION_DESCRIPTION_TAG, "Description" + i);
-                    tmp.put(MISSION_CLUE_TAG, clues);
-
-
-                    array.put(tmp);
-                }
-
-
-
-            } catch (JSONException e) {
-
-                e.printStackTrace();
+        try {
+            for (int i = 0; i < 34; i++) {
+                tmp.put(MISSION_NAME_TAG, "Mission " + i);
+                tmp.put(MISSION_DESCRIPTION_TAG, "Description" + i);
+                tmp.put(MISSION_CLUE_TAG, clues);
+                array.put(tmp);
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-            try {
+        try {
 
-                missions.put(CLUE_LIST,array);
+            missions.put(CLUE_LIST, array);
 
-            } catch (JSONException e) {
+        } catch (JSONException e) {
 
-                e.printStackTrace();
-            }
+            e.printStackTrace();
+        }
 
-//        return messages;
         return missions;
     }
 
-    public JSONObject getLog () {
-
-//        JSONObject log = getFromServer(LOG);
+    // Asks the server for the mission Logs
+    public JSONObject getLog() {
         JSONObject log = new JSONObject();
 
         ArrayList<String> logMessages = new ArrayList<>(
@@ -680,16 +751,11 @@ public class SessionManager {
                         "This also happened", "That happened as well"));
 
         try {
-
-            log.put(LOG_TAG,logMessages);
-
+            log.put(LOG_TAG, logMessages);
         } catch (JSONException e) {
-
             e.printStackTrace();
         }
 
         return log;
     }
-
-
 }
